@@ -158,8 +158,8 @@ function resolveDatabasePath(): string {
     return envPath;
   }
 
-  // 2. Default to hidden .indra file in current directory
-  return join(process.cwd(), ".indra");
+  // 2. Default to thoughts.indra (matches CLI default)
+  return join(process.cwd(), "thoughts.indra");
 }
 
 // ============================================================================
