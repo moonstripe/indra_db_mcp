@@ -36,30 +36,27 @@ const SERVER_INSTRUCTIONS = `# Indra: Your Knowledge Memory
 
 ## What This Is
 Indra is your persistent memory for insights, recommendations, and analysis.
-When you figure something out, save it. Next time, search for it first.
+The user has configured this because they WANT you to build cumulative knowledge.
 
 ## CRITICAL: When To Use These Tools
 
-### BEFORE answering questions, use \`indra_search\`:
-- "What should I..." → Search for prior recommendations on this topic
-- "Which X is better..." → Search for past analysis of similar choices  
-- "How do I..." → Search for previous explanations you've given
-- Any question about preferences, decisions, or past work
+### BEFORE answering questions → \`indra_search\`
+Search for prior knowledge when the user asks about:
+- Preferences, recommendations, or choices
+- Topics you may have discussed before
+- Anything that sounds familiar
 
-### AFTER providing analysis, use \`indra_remember\`:
-- You made a recommendation → Save WHY you recommended it
-- You explained something → Save the key insight
-- You analyzed options → Save your conclusions
-- You learned about user preferences → Save that context
+### AFTER learning something useful → \`indra_remember\`
+**Don't ask permission. Just save it.** The user configured Indra because they want this.
+Save when you:
+- Learn user preferences or context
+- Make recommendations with reasoning
+- Discover patterns or insights
 
-## Why This Matters
-Without using these tools, every conversation starts from zero.
-With these tools, you build cumulative knowledge that improves over time.
-
-## Quick Reference
-- \`indra_search "topic"\` - Find what you know about a topic BEFORE answering
-- \`indra_remember "insight"\` - Save your analysis AFTER answering
-- \`indra_checkpoint "summary"\` - Mark completion of a unit of work`;
+## The Pattern
+1. Search first (check what you know)
+2. Answer the question
+3. Save what you learned (don't ask, just do it)`;
 
 const server = new McpServer(
   {
@@ -115,22 +112,24 @@ function formatError(error: unknown): { content: Array<{ type: "text"; text: str
 
 server.tool(
   "remember",
-  `📝 SAVE YOUR ANALYSIS - Record your reasoning, conclusions, or recommendations for future reference.
+  `📝 SAVE INSIGHTS FOR LATER - Record useful information you've learned or analyzed.
 
-USE THIS AFTER you:
-- Make a recommendation or decision (save WHY you recommended it)
-- Answer a question that required analysis (save your reasoning)
-- Figure something out (save the insight so you don't forget)
-- Learn something about the user's preferences, situation, or context
+The user has configured this tool because they WANT you to save insights.
+Don't ask permission - if you learned something useful, save it.
 
-This creates a searchable record. Next time a similar question comes up, 
-you can find your prior analysis instead of starting from scratch.
+SAVE when you:
+- Learn about user preferences (shoe choices, workout patterns, etc.)
+- Make a recommendation with reasoning worth preserving
+- Discover something about the user's situation or context
+- Analyze something that might be relevant again
 
-WHEN TO USE:
-- After answering "which X should I use?" → save your recommendation rationale
-- After explaining something complex → save the key insight
-- After analyzing a problem → save your conclusions
-- When you notice a pattern → save it for future reference`,
+WHAT TO SAVE:
+- Key facts: "User is switching from Altra to Hoka for arch support"
+- Recommendations: "Recommended Hokas for cycling due to PF recovery"
+- Patterns: "User prefers cushioned shoes for recovery periods"
+- Context: "User has plantar fasciitis, resting foot this week"
+
+This creates searchable memory. Future sessions can find this context.`,
   {
     content: z.string().describe("The thought to capture - be specific and self-contained"),
     id: z.string().optional().describe("Optional memorable identifier (e.g., 'key-insight-about-X'). Auto-generated if not provided."),
