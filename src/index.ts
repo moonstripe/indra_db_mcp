@@ -85,7 +85,15 @@ The thought will be embedded for semantic search, allowing you to find it later
 by meaning rather than exact words. Each thought becomes a node that can be 
 connected to others, forming a web of understanding.
 
-This is how you think out loud - make your reasoning visible and traceable.`,
+This is how you think out loud - make your reasoning visible and traceable.
+
+PROACTIVE TRIGGERS - Use this tool when you notice yourself:
+- Making a key observation or having an "aha" moment
+- Identifying an important pattern or insight
+- Drawing a conclusion from analysis
+- Forming a hypothesis or assumption
+- Noting something surprising or unexpected
+- Making a decision with rationale worth preserving`,
   {
     content: z.string().describe("The thought to capture - be specific and self-contained"),
     id: z.string().optional().describe("Optional memorable identifier (e.g., 'key-insight-about-X'). Auto-generated if not provided."),
@@ -188,7 +196,12 @@ Use this to:
 - Review the current state of understanding
 - Plan what connections to make
 
-Returns all thoughts with their IDs and content.`,
+Returns all thoughts with their IDs and content.
+
+PROACTIVE TRIGGERS - Use this when:
+- Starting a new session (see what context already exists)
+- Feeling lost about what's been captured so far
+- Looking for orphan thoughts that need connections`,
   {},
   async () => {
     try {
@@ -220,7 +233,13 @@ Relationship types (use what fits, or create your own):
 - "similar_to" → These thoughts express related ideas
 - "relates_to" → General connection (when type is unclear)
 
-The web of connections IS your understanding made visible.`,
+The web of connections IS your understanding made visible.
+
+PROACTIVE TRIGGERS - Use this after creating a thought when you notice:
+- The new thought builds on or extends a previous one (derives_from)
+- The new thought provides evidence for a prior claim (supports)
+- The new thought contradicts something you noted earlier (contradicts)
+- Multiple thoughts form a logical sequence (precedes, causes)`,
   {
     from: z.string().describe("Source thought ID - the starting point of the relationship"),
     to: z.string().describe("Target thought ID - what the source connects to"),
@@ -316,7 +335,14 @@ Use this to:
 - Check if you've already captured something similar
 - Surface related ideas you may have forgotten
 
-Higher scores = more semantically similar.`,
+Higher scores = more semantically similar.
+
+PROACTIVE TRIGGERS - Use this tool when you:
+- Start working on a new task (search for related prior work)
+- Need context on a topic you've explored before
+- Want to avoid duplicating previous insights
+- Are about to make a decision (check if you've reasoned about this)
+- Feel like "I think I've thought about this before"`,
   {
     query: z.string().describe("What you're looking for - describe the meaning/concept"),
     limit: z.number().min(1).max(100).default(10).describe("Maximum results to return"),
@@ -346,7 +372,13 @@ Good checkpoint messages describe WHY, not just what:
 - "Refined hypothesis after finding contradicting evidence"  
 - "Branching to explore alternative approach"
 
-Checkpoints let you see how understanding evolved over time.`,
+Checkpoints let you see how understanding evolved over time.
+
+PROACTIVE TRIGGERS - Use this when:
+- Completing a logical unit of thinking or analysis
+- Finishing exploration of one approach before trying another
+- Reaching a conclusion or decision point
+- Before major changes to your mental model`,
   {
     message: z.string().describe("What this checkpoint represents - focus on the WHY"),
   },
@@ -398,7 +430,13 @@ Use this when:
 - Trying an alternative approach
 - Saving current state before major changes
 
-You can always come back to main, or merge insights later.`,
+You can always come back to main, or merge insights later.
+
+PROACTIVE TRIGGERS - Use this when you notice yourself thinking:
+- "What if we tried it a different way?"
+- "Let me explore this alternative before committing"
+- "I'm not sure this will work, but let's see"
+- "There are two valid approaches here"`,
   {
     name: z.string().describe("Name for the new branch (e.g., 'explore-alternative', 'hypothesis-b')"),
   },
