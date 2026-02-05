@@ -32,37 +32,34 @@ import { EdgeTypes, IndraError } from "./types.js";
  * 2. When Claude should search for these tools
  * 3. Key capabilities the server provides
  */
-const SERVER_INSTRUCTIONS = `# Indra: Versioned Thinking Tools
+const SERVER_INSTRUCTIONS = `# Indra: Your Knowledge Memory
 
-## What These Tools Do
-Indra provides a **knowledge graph for externalizing and versioning your reasoning**. 
-Think of it as git for your thoughts - capture insights, connect ideas, and track how 
-your understanding evolves over time.
+## What This Is
+Indra is your persistent memory for insights, recommendations, and analysis.
+When you figure something out, save it. Next time, search for it first.
 
-## When To Search For These Tools
-Use Indra tools when you are:
-- **Starting complex analysis** - Search for prior insights on the topic before beginning
-- **Having key insights** - Capture important observations, hypotheses, or conclusions
-- **Building on prior work** - Connect new thoughts to previous ones
-- **Exploring alternatives** - Branch to try different approaches without losing progress
-- **Completing a unit of work** - Checkpoint your progress with a meaningful summary
+## CRITICAL: When To Use These Tools
 
-## Key Capabilities
-- \`indra_search\` - Find prior thoughts by semantic meaning (not just keywords)
-- \`indra_remember\` - Capture a thought with optional memorable ID
-- \`indra_connect\` - Link thoughts with typed relationships (supports, contradicts, derives_from, etc.)
-- \`indra_branch\` / \`indra_switch_branch\` - Explore alternative lines of reasoning
-- \`indra_checkpoint\` - Save progress with a descriptive commit message
-- \`indra_list_thoughts\` / \`indra_explore\` - Review current state and connections
+### BEFORE answering questions, use \`indra_search\`:
+- "What should I..." → Search for prior recommendations on this topic
+- "Which X is better..." → Search for past analysis of similar choices  
+- "How do I..." → Search for previous explanations you've given
+- Any question about preferences, decisions, or past work
 
-## Usage Pattern
-1. Start sessions with \`indra_search\` to find relevant prior work
-2. Use \`indra_remember\` to capture key insights as you work
-3. Use \`indra_connect\` to link related thoughts
-4. Use \`indra_checkpoint\` when completing logical units of analysis
+### AFTER providing analysis, use \`indra_remember\`:
+- You made a recommendation → Save WHY you recommended it
+- You explained something → Save the key insight
+- You analyzed options → Save your conclusions
+- You learned about user preferences → Save that context
 
-The user has configured Indra because they want their reasoning process externalized 
-and versioned. Use these tools proactively during complex tasks.`;
+## Why This Matters
+Without using these tools, every conversation starts from zero.
+With these tools, you build cumulative knowledge that improves over time.
+
+## Quick Reference
+- \`indra_search "topic"\` - Find what you know about a topic BEFORE answering
+- \`indra_remember "insight"\` - Save your analysis AFTER answering
+- \`indra_checkpoint "summary"\` - Mark completion of a unit of work`;
 
 const server = new McpServer(
   {
@@ -118,27 +115,22 @@ function formatError(error: unknown): { content: Array<{ type: "text"; text: str
 
 server.tool(
   "remember",
-  `🧠 CAPTURE A THOUGHT - Crystallize an idea, insight, or realization into the knowledge graph.
+  `📝 SAVE YOUR ANALYSIS - Record your reasoning, conclusions, or recommendations for future reference.
 
-Use this when you:
-- Have an insight worth preserving
-- Want to externalize part of your reasoning
-- Need to create a reference point for later
-- Are building understanding incrementally
+USE THIS AFTER you:
+- Make a recommendation or decision (save WHY you recommended it)
+- Answer a question that required analysis (save your reasoning)
+- Figure something out (save the insight so you don't forget)
+- Learn something about the user's preferences, situation, or context
 
-The thought will be embedded for semantic search, allowing you to find it later 
-by meaning rather than exact words. Each thought becomes a node that can be 
-connected to others, forming a web of understanding.
+This creates a searchable record. Next time a similar question comes up, 
+you can find your prior analysis instead of starting from scratch.
 
-This is how you think out loud - make your reasoning visible and traceable.
-
-PROACTIVE TRIGGERS - Use this tool when you notice yourself:
-- Making a key observation or having an "aha" moment
-- Identifying an important pattern or insight
-- Drawing a conclusion from analysis
-- Forming a hypothesis or assumption
-- Noting something surprising or unexpected
-- Making a decision with rationale worth preserving`,
+WHEN TO USE:
+- After answering "which X should I use?" → save your recommendation rationale
+- After explaining something complex → save the key insight
+- After analyzing a problem → save your conclusions
+- When you notice a pattern → save it for future reference`,
   {
     content: z.string().describe("The thought to capture - be specific and self-contained"),
     id: z.string().optional().describe("Optional memorable identifier (e.g., 'key-insight-about-X'). Auto-generated if not provided."),
@@ -365,29 +357,24 @@ find related concepts, or understand context.`,
 
 server.tool(
   "search",
-  `🔮 SEMANTIC SEARCH - Find thoughts by meaning, not just keywords.
+  `🔍 CHECK PRIOR KNOWLEDGE - Search for relevant context before answering questions.
 
-This is powerful: describe what you're looking for conceptually, and find 
-thoughts that match semantically. The embeddings capture meaning, so:
+CALL THIS FIRST when:
+- Answering questions about user preferences ("what do I like?", "which should I use?")
+- Making recommendations that might have prior context
+- Addressing topics you may have analyzed before
+- The user asks something that sounds familiar
 
-- "initial hypothesis" might find "my first theory about X"
-- "things that went wrong" might find "problems encountered"  
-- "key decisions" might find "we chose to..."
+This searches your saved analyses, recommendations, and insights by meaning.
+If you've reasoned about this topic before, you'll find it here.
 
-Use this to:
-- Rediscover relevant prior thinking
-- Find thoughts to connect
-- Check if you've already captured something similar
-- Surface related ideas you may have forgotten
+EXAMPLES:
+- User asks "what shoes for the gym?" → search "gym shoes recommendation"
+- User asks "how should I structure this?" → search "architecture decisions"
+- User asks "what's my preference?" → search the relevant topic
 
-Higher scores = more semantically similar.
-
-PROACTIVE TRIGGERS - Use this tool when you:
-- Start working on a new task (search for related prior work)
-- Need context on a topic you've explored before
-- Want to avoid duplicating previous insights
-- Are about to make a decision (check if you've reasoned about this)
-- Feel like "I think I've thought about this before"`,
+Returns prior insights ranked by relevance. Use them to give consistent, 
+informed answers that build on past reasoning.`,
   {
     query: z.string().describe("What you're looking for - describe the meaning/concept"),
     limit: z.number().min(1).max(100).default(10).describe("Maximum results to return"),

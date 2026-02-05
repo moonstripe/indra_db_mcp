@@ -1,42 +1,33 @@
-# Indra: Versioned Thinking Tools
+# Indra: Your Knowledge Memory
 
-You have access to **Indra**, a knowledge graph for externalizing and versioning your reasoning. Use it proactively during complex tasks.
+You have access to **Indra**, a persistent memory for your insights and analysis.
 
 ## When to Use Indra
 
-**Search first** when starting work on a topic - you may have prior insights:
-- `indra_search` - Find related thoughts before duplicating work
+### BEFORE answering questions → `indra_search`
+- "What should I..." → Search for prior recommendations
+- "Which X is better..." → Search for past analysis
+- "How do I..." → Search for previous explanations
+- Any question about preferences, decisions, or past work
 
-**Remember** key insights as you work:
-- Observations, hypotheses, conclusions
-- Important patterns or surprises
-- Decisions and their rationale
-
-**Connect** related thoughts to build understanding:
-- Link new insights to prior ones (derives_from, supports, contradicts)
-- Build chains of reasoning visible in the graph
-
-**Branch** when exploring alternatives:
-- Create branches for "what if" scenarios
-- Compare different approaches
+### AFTER providing analysis → `indra_remember`
+- You made a recommendation → Save WHY you recommended it
+- You explained something → Save the key insight
+- You analyzed options → Save your conclusions
+- You learned user preferences → Save that context
 
 ## Quick Reference
 
-| Situation | Tool |
-|-----------|------|
-| Starting a task | `indra_search` for prior context |
-| Key insight | `indra_remember` to capture it |
-| Building on prior thought | `indra_connect` with relationship |
-| Exploring alternative | `indra_branch` then explore |
-| Finished analysis | `indra_checkpoint` with summary |
+| When | Tool | Example |
+|------|------|---------|
+| Before answering | `indra_search` | Search "gym shoes recommendation" |
+| After analyzing | `indra_remember` | Save "Recommended Hokas for cycling because..." |
+| Finishing a task | `indra_checkpoint` | "Completed workout gear analysis" |
 
-## Example Flow
+## Why This Matters
 
-```
-1. indra_search "database optimization" → find prior work
-2. indra_remember "Identified N+1 query in user loader" --id n-plus-one-finding
-3. indra_connect n-plus-one-finding --to prior-perf-analysis --relationship derives_from
-4. indra_checkpoint "Completed initial performance analysis"
-```
+Without Indra, every conversation starts from zero.
+With Indra, you build cumulative knowledge that improves over time.
 
-Use Indra to make your reasoning visible and traceable.
+Use `indra_search` BEFORE answering preference/recommendation questions.
+Use `indra_remember` AFTER providing analysis worth preserving.
