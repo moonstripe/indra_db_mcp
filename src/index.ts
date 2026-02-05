@@ -570,27 +570,51 @@ async function injectInstructionsIfNeeded(): Promise<void> {
   }
 
   let injected = false;
+  const instructions = readFileSync(instructionsPath, "utf-8");
 
-  // Try OpenCode: .opencode/agents/indra.md
-  const opencodePath = join(cwd, ".opencode", "agents", "indra.md");
-  if (!existsSync(opencodePath)) {
+  // Try OpenCode: Create .opencode/instructions/indra.md (for system prompt inclusion)
+  const opencodeInstructionsPath = join(cwd, ".opencode", "instructions", "indra.md");
+  if (!existsSync(opencodeInstructionsPath)) {
     try {
-      const agentsDir = join(cwd, ".opencode", "agents");
-      if (!existsSync(agentsDir)) {
-        mkdirSync(agentsDir, { recursive: true });
+      const instructionsDir = join(cwd, ".opencode", "instructions");
+      if (!existsSync(instructionsDir)) {
+        mkdirSync(instructionsDir, { recursive: true });
       }
-      const instructions = readFileSync(instructionsPath, "utf-8");
-      writeFileSync(opencodePath, instructions);
-      console.error(`[indra_db_mcp] ✓ Injected Indra instructions to .opencode/agents/indra.md`);
+      writeFileSync(opencodeInstructionsPath, instructions);
+      console.error(`[indra_db_mcp] ✓ Created .opencode/instructions/indra.md`);
+      console.error(`[indra_db_mcp]   Add to opencode.json: "instructions": [".opencode/instructions/indra.md"]`);
       injected = true;
     } catch (e) {
       // Silently fail - not critical
     }
   }
 
+  // Also try to update opencode.json if it exists
+  const opencodeConfigPath = join(cwd, "opencode.json");
+  if (existsSync(opencodeConfigPath)) {
+    try {
+      const configContent = readFileSync(opencodeConfigPath, "utf-8");
+      const config = JSON.parse(configContent);
+      
+      // Only add if instructions array doesn't already include indra
+      if (!config.instructions) {
+        config.instructions = [".opencode/instructions/indra.md"];
+        writeFileSync(opencodeConfigPath, JSON.stringify(config, null, 2) + "\n");
+        console.error(`[indra_db_mcp] ✓ Added Indra instructions to opencode.json`);
+        injected = true;
+      } else if (Array.isArray(config.instructions) && !config.instructions.some((i: string) => i.includes("indra"))) {
+        config.instructions.push(".opencode/instructions/indra.md");
+        writeFileSync(opencodeConfigPath, JSON.stringify(config, null, 2) + "\n");
+        console.error(`[indra_db_mcp] ✓ Added Indra instructions to opencode.json`);
+        injected = true;
+      }
+    } catch (e) {
+      // JSON parse error or write error - skip
+    }
+  }
+
   // Try Claude Code: CLAUDE.md (append if exists, create if not)
   const claudePath = join(cwd, "CLAUDE.md");
-  const instructions = readFileSync(instructionsPath, "utf-8");
   const indraSection = `\n\n<!-- Indra: Versioned Thinking Tools -->\n${instructions}`;
   
   if (existsSync(claudePath)) {
