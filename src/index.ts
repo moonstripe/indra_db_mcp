@@ -55,7 +55,7 @@ because they WANT you to track their preferences, context, and insights.
 const server = new McpServer(
   {
     name: "indra_db",
-    version: "0.1.12",
+    version: "0.1.13",
   },
   {
     instructions: SERVER_INSTRUCTIONS,

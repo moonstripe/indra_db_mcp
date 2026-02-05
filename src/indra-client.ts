@@ -37,7 +37,7 @@ import { IndraError } from "./types.js";
 // ============================================================================
 
 export interface IndraClientConfig {
-  /** Path to the database file. Defaults to ./thoughts.indra or ~/.thoughts.indra */
+  /** Path to the database file. Defaults to ./.indra */
   databasePath?: string;
   /** Path to the indra binary. Defaults to searching PATH, then bundled, then auto-install */
   binaryPath?: string;
@@ -158,8 +158,8 @@ function resolveDatabasePath(): string {
     return envPath;
   }
 
-  // 2. Default to thoughts.indra (matches CLI default)
-  return join(process.cwd(), "thoughts.indra");
+  // 2. Default to .indra in current directory
+  return join(process.cwd(), ".indra");
 }
 
 // ============================================================================
