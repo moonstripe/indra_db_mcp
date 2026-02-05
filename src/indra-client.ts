@@ -151,15 +151,15 @@ function resolveDatabasePath(): string {
   // 1. Check environment variable
   const envPath = process.env.INDRA_DB_PATH;
   if (envPath) {
-    // If explicitly set, use global path
+    // If explicitly set, use that path
     if (envPath.startsWith("~")) {
       return join(homedir(), envPath.slice(1));
     }
     return envPath;
   }
 
-  // 2. Default to local directory for development
-  return join(process.cwd(), "thoughts.indra");
+  // 2. Default to hidden .indra file in current directory
+  return join(process.cwd(), ".indra");
 }
 
 // ============================================================================

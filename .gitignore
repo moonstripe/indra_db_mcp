@@ -35,7 +35,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # indra database files (don't commit your thoughts!)
 *.indra
-thoughts.indra
+.indra
 
 # bundled binaries (downloaded on install)
 bin/

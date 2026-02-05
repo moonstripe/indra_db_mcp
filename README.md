@@ -47,7 +47,7 @@ Add to your `claude_desktop_config.json`:
       "command": "bun",
       "args": ["run", "/path/to/indra_db_mcp/src/index.ts"],
       "env": {
-        "INDRA_DB_PATH": "~/.thoughts.indra"
+        "INDRA_DB_PATH": "~/.indra"
       }
     }
   }
@@ -58,10 +58,10 @@ Add to your `claude_desktop_config.json`:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `INDRA_DB_PATH` | Path to database file | `./thoughts.indra` (local) |
+| `INDRA_DB_PATH` | Path to database file | `./.indra` (hidden file) |
 
 When `INDRA_DB_PATH` is set, uses that path (supports `~` for home directory).
-When unset, creates `thoughts.indra` in the current working directory.
+When unset, creates a hidden `.indra` file in the current working directory.
 
 ## Available Tools
 
