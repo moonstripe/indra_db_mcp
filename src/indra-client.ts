@@ -52,7 +52,7 @@ export interface IndraClientConfig {
 const DEFAULT_CONFIG: Required<IndraClientConfig> = {
   databasePath: "",  // Will be resolved dynamically
   binaryPath: "",    // Will be resolved dynamically
-  autoCommit: true,
+  autoCommit: true,  // Let CLI handle commits automatically
   timeout: 30000,
   autoInit: true,
 };
@@ -224,7 +224,8 @@ export class IndraClient {
       this.initialized = true;
     }
 
-    const fullArgs = ["-d", this.config.databasePath, "-f", "json", "--no-auto-commit", ...args];
+    // Always use HF embedder and let CLI auto-commit
+    const fullArgs = ["-d", this.config.databasePath, "-f", "json", "--embedder", "hf", ...args];
 
     return new Promise((resolve, reject) => {
       const proc = spawn(this.binaryPath!, fullArgs, {
@@ -282,19 +283,14 @@ export class IndraClient {
   /**
    * Create a new thought in the knowledge graph.
    * The thought will be assigned embeddings automatically for semantic search.
+   * Note: CLI auto-commits, so no explicit commit needed.
    */
   async createThought(content: string, options?: { id?: string }): Promise<Thought> {
     const args = ["create", content];
     if (options?.id) {
       args.push("--id", options.id);
     }
-    const result = await this.exec<Thought>(args);
-    
-    if (this.config.autoCommit) {
-      await this.commit(`Create thought: ${options?.id || result.id}`);
-    }
-    
-    return result;
+    return this.exec<Thought>(args);
   }
 
   /**
@@ -307,27 +303,19 @@ export class IndraClient {
   /**
    * Update the content of an existing thought.
    * This creates a new version while preserving history.
+   * Note: CLI auto-commits, so no explicit commit needed.
    */
   async updateThought(id: string, content: string): Promise<Thought> {
-    const result = await this.exec<Thought>(["update", id, content]);
-    
-    if (this.config.autoCommit) {
-      await this.commit(`Update thought: ${id}`);
-    }
-    
-    return result;
+    return this.exec<Thought>(["update", id, content]);
   }
 
   /**
    * Delete a thought from the current state.
    * The thought remains in history and can be recovered via branching.
+   * Note: CLI auto-commits, so no explicit commit needed.
    */
   async deleteThought(id: string): Promise<void> {
     await this.exec(["delete", id]);
-    
-    if (this.config.autoCommit) {
-      await this.commit(`Delete thought: ${id}`);
-    }
   }
 
   /**
@@ -343,6 +331,7 @@ export class IndraClient {
 
   /**
    * Create a typed relationship between two thoughts.
+   * Note: CLI auto-commits, so no explicit commit needed.
    */
   async relate(
     sourceId: string,
@@ -354,17 +343,12 @@ export class IndraClient {
     if (options?.weight !== undefined) {
       args.push("-w", options.weight.toString());
     }
-    const result = await this.exec<Edge>(args);
-    
-    if (this.config.autoCommit) {
-      await this.commit(`Relate ${sourceId} --[${edgeType}]--> ${targetId}`);
-    }
-    
-    return result;
+    return this.exec<Edge>(args);
   }
 
   /**
    * Remove a relationship between two thoughts.
+   * Note: CLI auto-commits, so no explicit commit needed.
    */
   async unrelate(sourceId: string, targetId: string, edgeType?: string): Promise<void> {
     const args = ["unrelate", sourceId, targetId];
@@ -372,10 +356,6 @@ export class IndraClient {
       args.push("-t", edgeType);
     }
     await this.exec(args);
-    
-    if (this.config.autoCommit) {
-      await this.commit(`Unrelate ${sourceId} from ${targetId}`);
-    }
   }
 
   /**
