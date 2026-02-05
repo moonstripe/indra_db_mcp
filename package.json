@@ -19,10 +19,21 @@
     "indra_db",
     "knowledge-graph",
     "vector-database",
-    "versioned-thoughts"
+    "versioned-thoughts",
+    "ai-memory",
+    "semantic-search",
+    "graph-database"
   ],
-  "author": "",
+  "author": "moonstripe",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moonstripe/indra_db_mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/moonstripe/indra_db_mcp/issues"
+  },
+  "homepage": "https://github.com/moonstripe/indra_db_mcp#readme",
   "devDependencies": {
     "@types/bun": "latest",
     "typescript": "^5"
@@ -33,5 +44,9 @@
   },
   "engines": {
     "bun": ">=1.0.0"
-  }
+  },
+  "files": [
+    "src",
+    "README.md"
+  ]
 }
