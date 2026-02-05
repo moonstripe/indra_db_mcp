@@ -224,7 +224,7 @@ export class IndraClient {
       this.initialized = true;
     }
 
-    const fullArgs = ["-d", this.config.databasePath, "-f", "json", ...args];
+    const fullArgs = ["-d", this.config.databasePath, "-f", "json", "--no-auto-commit", ...args];
 
     return new Promise((resolve, reject) => {
       const proc = spawn(this.binaryPath!, fullArgs, {
