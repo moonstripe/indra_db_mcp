@@ -1,9 +1,8 @@
 {
   "name": "indra_db_mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "MCP server for indra_db - a content-addressed graph database for versioned thoughts",
   "type": "module",
-  "main": "src/index.ts",
   "bin": {
     "indra-mcp": "./src/index.ts"
   },
@@ -41,9 +40,6 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.26.0",
     "zod": "^4.3.6"
-  },
-  "engines": {
-    "bun": ">=1.0.0"
   },
   "files": [
     "src",

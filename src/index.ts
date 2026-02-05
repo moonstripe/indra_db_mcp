@@ -1,3 +1,4 @@
+#!/usr/bin/env bun
 /**
  * indra_db MCP Server
  * 

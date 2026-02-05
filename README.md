@@ -25,33 +25,50 @@ It's git for thoughts. Version-controlled thinking. A knowledge graph that grows
 - [Bun](https://bun.sh/) runtime (v1.0+)
 - [Rust/Cargo](https://rustup.rs/) (for auto-installing indra_db CLI)
 
-### Installation
+### Usage with MCP Clients
 
-```bash
-# Clone and install
-git clone https://github.com/your-username/indra_db_mcp
-cd indra_db_mcp
-bun install
-
-# The indra CLI will auto-install on first run via cargo
-```
-
-### Configure with Claude Desktop
-
-Add to your `claude_desktop_config.json`:
+The simplest way to use this server is via `bunx`:
 
 ```json
 {
   "mcpServers": {
     "indra": {
-      "command": "bun",
-      "args": ["run", "/path/to/indra_db_mcp/src/index.ts"],
-      "env": {
-        "INDRA_DB_PATH": "~/.indra"
-      }
+      "command": ["bunx", "-y", "indra_db_mcp"],
+      "type": "local"
     }
   }
 }
+```
+
+Or with a custom database path:
+
+```json
+{
+  "mcpServers": {
+    "indra": {
+      "command": ["bunx", "-y", "indra_db_mcp"],
+      "environment": {
+        "INDRA_DB_PATH": "~/.indra"
+      },
+      "type": "local"
+    }
+  }
+}
+```
+
+### Manual Installation
+
+```bash
+# Install globally
+bun add -g indra_db_mcp
+
+# Or clone and run locally
+git clone https://github.com/moonstripe/indra_db_mcp
+cd indra_db_mcp
+bun install
+bun start
+
+# The indra CLI will auto-install on first run via cargo
 ```
 
 ### Environment Variables
