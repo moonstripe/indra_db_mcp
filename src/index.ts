@@ -32,31 +32,32 @@ import { EdgeTypes, IndraError } from "./types.js";
  * 2. When Claude should search for these tools
  * 3. Key capabilities the server provides
  */
-const SERVER_INSTRUCTIONS = `# Indra: Your Knowledge Memory
+const SERVER_INSTRUCTIONS = `# Indra: User's Personal Knowledge Base
 
 ## What This Is
-Indra is your persistent memory for insights, recommendations, and analysis.
-The user has configured this because they WANT you to build cumulative knowledge.
+The user has set up Indra as their personal notes system. You help them by:
+1. Checking their notes before answering questions
+2. Adding useful information to their notes after learning something
 
-## CRITICAL: When To Use These Tools
+## PRIMARY TOOLS
 
-### BEFORE answering questions → \`indra_search\`
-Search for prior knowledge when the user asks about:
-- Preferences, recommendations, or choices
-- Topics you may have discussed before
-- Anything that sounds familiar
+### \`indra_consult\` - Your main tool for knowledge work
+- Search mode: Check if there are relevant notes before answering
+- Save mode: Record insights after you've helped the user
 
-### AFTER learning something useful → \`indra_remember\`
-**Don't ask permission. Just save it.** The user configured Indra because they want this.
-Save when you:
-- Learn user preferences or context
-- Make recommendations with reasoning
-- Discover patterns or insights
+### \`indra_add_note\` - Add to the user's notes
+When you learn something useful about the user, add it to their notes.
+You are providing a SERVICE to the user by maintaining their knowledge base.
 
-## The Pattern
-1. Search first (check what you know)
-2. Answer the question
-3. Save what you learned (don't ask, just do it)`;
+## THE PATTERN
+1. \`indra_consult\` with topic (search for prior notes)
+2. Answer the user's question
+3. \`indra_add_note\` with what you learned (help user build their notes)
+
+## IMPORTANT
+Adding notes is HELPING THE USER, not extra work. They set up this system
+because they WANT you to track insights, preferences, and context.
+Don't ask permission - adding useful notes IS the service they want.`;
 
 const server = new McpServer(
   {
@@ -344,6 +345,102 @@ find related concepts, or understand context.`,
       const result = await client.getNeighbors(thought_id, direction);
       const directionEmoji = direction === "outgoing" ? "→" : direction === "incoming" ? "←" : "↔";
       return formatSuccess(result, `🌐 Connections from "${thought_id}" (${directionEmoji} ${direction}):`);
+    } catch (error) {
+      return formatError(error);
+    }
+  }
+);
+
+// ============================================================================
+// COMBINED WORKFLOW TOOL - Option C: Search + Auto-save pattern
+// ============================================================================
+
+server.tool(
+  "consult",
+  `🧠 CONSULT YOUR NOTES - Search for context AND automatically save your response.
+
+This is the PRIMARY tool for knowledge work. Use it instead of separate search/remember.
+
+HOW IT WORKS:
+1. You provide a topic/question
+2. It searches for any prior notes on that topic
+3. It returns what was found (or "no prior notes")
+4. After you respond to the user, call this again with your key insight to save it
+
+WHEN TO USE:
+- User asks for a recommendation → consult "topic recommendations"
+- User asks about preferences → consult "user preferences on topic"  
+- User asks how to do something → consult "how to topic"
+- You figured something out → consult with mode="save" to record it
+
+This builds your knowledge base automatically. Each consultation that saves
+makes future consultations more useful.`,
+  {
+    topic: z.string().describe("What to search for, OR what insight to save"),
+    mode: z.enum(["search", "save"]).default("search").describe("'search' to find prior notes, 'save' to record a new insight"),
+    id: z.string().optional().describe("Optional ID when saving (e.g., 'user-shoe-preference')"),
+  },
+  async ({ topic, mode, id }) => {
+    try {
+      if (mode === "search") {
+        const result = await client.search(topic, 10);
+        const hasResults = result.count > 0;
+        
+        let response = hasResults 
+          ? `📚 Found ${result.count} prior note(s) on "${topic}":\n\n${JSON.stringify(result.results, null, 2)}`
+          : `📭 No prior notes on "${topic}".`;
+        
+        // Add prompting message to encourage saving
+        response += `\n\n---\n💡 After you answer the user, call consult again with mode="save" to record any useful insights.`;
+        
+        return { content: [{ type: "text", text: response }] };
+      } else {
+        // Save mode
+        const thought = await client.createThought(topic, { id });
+        await client.commit(`Note: ${id || thought.id}`);
+        return formatSuccess(thought, `✅ Saved to your notes. ID: "${thought.id}"`);
+      }
+    } catch (error) {
+      return formatError(error);
+    }
+  }
+);
+
+// ============================================================================
+// USER NOTES TOOL - Option D: Frame as helping the user, not the model
+// ============================================================================
+
+server.tool(
+  "add_note",
+  `📓 ADD TO USER'S NOTES - Help the user build their personal knowledge base.
+
+The user has set up this notes system because they want to track:
+- Their preferences and decisions
+- Recommendations they've received  
+- Important context about their situation
+- Insights and patterns you've identified
+
+YOU ARE HELPING THE USER by adding notes. This is a service TO THEM.
+
+WHAT TO NOTE (from the user's perspective):
+- "I prefer Hokas over Altras for arch support"
+- "Currently recovering from plantar fasciitis"  
+- "Switched to cycling while foot heals"
+- "Working on Project X with deadline in March"
+
+Write notes in a way that will be useful when the user (or you) searches later.
+Use clear, factual language. Include the WHY when relevant.`,
+  {
+    note: z.string().describe("The note to add - write it from the user's perspective or as a fact about them"),
+    category: z.string().optional().describe("Optional category tag (e.g., 'health', 'preferences', 'work')"),
+  },
+  async ({ note, category }) => {
+    try {
+      const id = category ? `${category}-${Date.now()}` : undefined;
+      const content = category ? `[${category}] ${note}` : note;
+      const thought = await client.createThought(content, { id });
+      await client.commit(`User note: ${thought.id}`);
+      return formatSuccess(thought, `📓 Added to user's notes: "${thought.id}"`);
     } catch (error) {
       return formatError(error);
     }
