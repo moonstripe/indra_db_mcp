@@ -40,6 +40,25 @@ The simplest way to use this server is via `bunx`:
 }
 ```
 
+### Enabling Proactive Use
+
+Models won't automatically use Indra unless instructed. Add the bundled instructions file to your config:
+
+**OpenCode** (`~/.config/opencode/opencode.json` or project `opencode.json`):
+```json
+{
+  "instructions": ["node_modules/indra_db_mcp/INDRA_INSTRUCTIONS.md"]
+}
+```
+
+**Claude Code** (project `CLAUDE.md` or global `~/.claude/CLAUDE.md`):
+```markdown
+<!-- Include Indra instructions -->
+@import node_modules/indra_db_mcp/INDRA_INSTRUCTIONS.md
+```
+
+Or copy `INDRA_INSTRUCTIONS.md` to your project and reference it directly.
+
 Or with a custom database path:
 
 ```json
