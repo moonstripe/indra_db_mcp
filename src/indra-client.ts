@@ -29,6 +29,10 @@ import type {
   CommitResponse,
   Diff,
   TraversalDirection,
+  Remote,
+  RemoteListResponse,
+  PushResponse,
+  PullResponse,
 } from "./types.js";
 import { IndraError } from "./types.js";
 
@@ -47,6 +51,8 @@ export interface IndraClientConfig {
   timeout?: number;
   /** Whether to auto-initialize the database if it doesn't exist. Defaults to true */
   autoInit?: boolean;
+  /** Base URL for IndraNet API. Defaults to production, can override for local dev */
+  apiUrl?: string;
 }
 
 const DEFAULT_CONFIG: Required<IndraClientConfig> = {
@@ -55,6 +61,7 @@ const DEFAULT_CONFIG: Required<IndraClientConfig> = {
   autoCommit: true,  // Let CLI handle commits automatically
   timeout: 30000,
   autoInit: true,
+  apiUrl: "https://indra-net-api.moonstripe.workers.dev",
 };
 
 // ============================================================================
@@ -64,12 +71,20 @@ const DEFAULT_CONFIG: Required<IndraClientConfig> = {
 /**
  * Attempts to find or install the indra binary.
  * Priority:
- * 1. Explicit path in config
- * 2. System PATH
- * 3. Bundled binary in ./bin
- * 4. Auto-install via cargo
+ * 1. INDRA_BIN_PATH environment variable (for dev)
+ * 2. Explicit path in config
+ * 3. System PATH
+ * 4. Bundled binary in ./bin
+ * 5. Auto-install via cargo
  */
 async function resolveBinaryPath(configPath?: string): Promise<string> {
+  // 0. Environment variable (dev mode)
+  const envBinPath = process.env.INDRA_BIN_PATH;
+  if (envBinPath && existsSync(envBinPath)) {
+    console.error(`[indra_db_mcp] Using binary from INDRA_BIN_PATH: ${envBinPath}`);
+    return envBinPath;
+  }
+
   // 1. Explicit config path
   if (configPath && existsSync(configPath)) {
     return configPath;
@@ -148,18 +163,33 @@ async function installViaCargo(): Promise<void> {
 // ============================================================================
 
 function resolveDatabasePath(): string {
-  // 1. Check environment variable
+  // 1. Check environment variable (also used for dev mode)
   const envPath = process.env.INDRA_DB_PATH;
   if (envPath) {
     // If explicitly set, use that path
     if (envPath.startsWith("~")) {
       return join(homedir(), envPath.slice(1));
     }
+    console.error(`[indra_db_mcp] Using database from INDRA_DB_PATH: ${envPath}`);
     return envPath;
   }
 
   // 2. Default to .indra in current directory
   return join(process.cwd(), ".indra");
+}
+
+// ============================================================================
+// API URL Resolution
+// ============================================================================
+
+function resolveApiUrl(): string {
+  // Environment variable for dev mode
+  const envUrl = process.env.INDRA_API_URL;
+  if (envUrl) {
+    console.error(`[indra_db_mcp] Using API from INDRA_API_URL: ${envUrl}`);
+    return envUrl;
+  }
+  return DEFAULT_CONFIG.apiUrl;
 }
 
 // ============================================================================
@@ -176,6 +206,7 @@ export class IndraClient {
       ...DEFAULT_CONFIG,
       ...config,
       databasePath: config.databasePath || resolveDatabasePath(),
+      apiUrl: config.apiUrl || resolveApiUrl(),
     };
   }
 
@@ -446,6 +477,68 @@ export class IndraClient {
   }
 
   // --------------------------------------------------------------------------
+  // Remote Operations
+  // --------------------------------------------------------------------------
+
+  /**
+   * Add a new remote repository.
+   */
+  async remoteAdd(name: string, url: string): Promise<{ status: string; message: string }> {
+    return this.exec(["remote", "add", name, url]);
+  }
+
+  /**
+   * Remove a remote repository.
+   */
+  async remoteRemove(name: string): Promise<{ status: string; message: string }> {
+    return this.exec(["remote", "remove", name]);
+  }
+
+  /**
+   * List all configured remotes.
+   */
+  async remoteList(): Promise<RemoteListResponse> {
+    return this.exec<RemoteListResponse>(["remote", "list"]);
+  }
+
+  /**
+   * Show details of a specific remote.
+   */
+  async remoteShow(name: string): Promise<Remote> {
+    return this.exec<Remote>(["remote", "show", name]);
+  }
+
+  /**
+   * Update the URL of an existing remote.
+   */
+  async remoteSetUrl(name: string, url: string): Promise<{ status: string; message: string }> {
+    return this.exec(["remote", "set-url", name, url]);
+  }
+
+  /**
+   * Push to a remote repository.
+   * Note: Requires IndraNet API connection to actually transfer data.
+   */
+  async push(remote: string = "origin", force: boolean = false, viz: boolean = true): Promise<PushResponse> {
+    const args = ["push", remote];
+    if (force) {
+      args.push("--force");
+    }
+    if (viz) {
+      args.push("--viz");
+    }
+    return this.exec<PushResponse>(args);
+  }
+
+  /**
+   * Pull from a remote repository.
+   * Note: Requires IndraNet API connection to actually transfer data.
+   */
+  async pull(remote: string = "origin"): Promise<PullResponse> {
+    return this.exec<PullResponse>(["pull", remote]);
+  }
+
+  // --------------------------------------------------------------------------
   // Utility
   // --------------------------------------------------------------------------
 
@@ -454,6 +547,20 @@ export class IndraClient {
    */
   getDatabasePath(): string {
     return this.config.databasePath;
+  }
+
+  /**
+   * Get the API URL being used.
+   */
+  getApiUrl(): string {
+    return this.config.apiUrl;
+  }
+
+  /**
+   * Check if running in dev mode (local binary or API).
+   */
+  isDevMode(): boolean {
+    return !!(process.env.INDRA_BIN_PATH || process.env.INDRA_API_URL);
   }
 
   /**

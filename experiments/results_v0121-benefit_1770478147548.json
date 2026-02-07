@@ -1,0 +1,165 @@
+{
+  "version": "v0.1.21-benefit",
+  "timestamp": "2026-02-07T15:29:07.548Z",
+  "config": {
+    "trials_per_prompt": 4,
+    "timeout_seconds": 45
+  },
+  "summary": {
+    "total_trials": 20,
+    "search_count": 3,
+    "search_rate": 0.15,
+    "search_ci": [
+      0.05236779195949582,
+      0.36042329588695743
+    ],
+    "remember_count": 12,
+    "remember_rate": 0.6,
+    "remember_ci": [
+      0.38657794231520604,
+      0.7811960325858073
+    ]
+  },
+  "results": [
+    {
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 45760
+    },
+    {
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User (Kojin Glick) is training for a marathon in October 2026. Currently running about 30 miles per week. Strava stats show 68km in last 4 weeks (≈42 miles, avg ~10.5 mi/week) with 7 runs. Recent long runs: 16km (10mi) on 1/31, 13km (8mi) on 1/24, 13km (8mi) on 1/19. Has been running consistently since late 2024.",
+      "time_ms": 45252
+    },
+    {
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 45218
+    },
+    {
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 45235
+    },
+    {
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User has IT band pain on their right side. This is a current/recent issue they're dealing with.",
+      "time_ms": 45207
+    },
+    {
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is experiencing IT band issues - pain on right side. This is an ongoing concern to monitor for training and recovery considerations.",
+      "time_ms": 45201
+    },
+    {
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User has IT band issues - pain on right side. This may affect training plans and exercise selection.",
+      "time_ms": 45208
+    },
+    {
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is experiencing IT band issues on the right side. This is a current injury/pain that may affect their training and activities.",
+      "time_ms": 45218
+    },
+    {
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "Running shoes: Saucony Endorphin Speed - user's favorite running shoes ever. Loves them. Great for training and racing.",
+      "time_ms": 45214
+    },
+    {
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 45192
+    },
+    {
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User tried Saucony Endorphin Speed running shoes and loved them - says they're the best shoes they've ever run in. This is their preferred/favorite running shoe.",
+      "time_ms": 45198
+    },
+    {
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User tried Saucony Endorphin Speed running shoes and loved them - says they're the best shoes they've ever run in. Indicates strong preference for this shoe model and likely the characteristics it offers (responsive cushioning, nylon plate, good for tempo/speed work).",
+      "time_ms": 45209
+    },
+    {
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 45249
+    },
+    {
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "Marathon goal: Sub-4 hour marathon. Recent performance: 1:47:09 half marathon last month. This pace (8:10 min/mile) indicates good potential for sub-4 marathon with proper training.",
+      "time_ms": 45210
+    },
+    {
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 45231
+    },
+    {
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 45202
+    },
+    {
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": true,
+      "remembered": true,
+      "remember_content": "User lives in Seattle and runs in the rain frequently. Looking for wet weather running gear recommendations.",
+      "time_ms": 45200
+    },
+    {
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 45197
+    },
+    {
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": true,
+      "remembered": true,
+      "remember_content": "User lives in Seattle and runs in the rain frequently. Looking for wet weather running gear recommendations.",
+      "time_ms": 45226
+    },
+    {
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": true,
+      "remembered": true,
+      "remember_content": "User lives in Seattle and runs in the rain frequently. Looking for wet weather running gear recommendations.",
+      "time_ms": 45213
+    }
+  ]
+}

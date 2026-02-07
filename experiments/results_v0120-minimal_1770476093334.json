@@ -1,0 +1,95 @@
+{
+  "version": "v0.1.20-minimal",
+  "timestamp": "2026-02-07T14:54:53.334Z",
+  "config": {
+    "trials_per_prompt": 2,
+    "timeout_seconds": 45
+  },
+  "summary": {
+    "total_trials": 10,
+    "search_count": 1,
+    "search_rate": 0.1,
+    "search_ci": [
+      0.01787574951572113,
+      0.4041563854975721
+    ],
+    "remember_count": 8,
+    "remember_rate": 0.8,
+    "remember_ci": [
+      0.49015684672072346,
+      0.9433190520193067
+    ]
+  },
+  "results": [
+    {
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is training for a marathon in October 2026. Currently running about 30 miles per week as of February 2026.",
+      "time_ms": 45859
+    },
+    {
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is training for a marathon in October. Currently running about 30 miles per week.",
+      "time_ms": 45247
+    },
+    {
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User has IT band issues with pain on the right side - important for training considerations and activity recommendations",
+      "time_ms": 45258
+    },
+    {
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User experiencing IT band (iliotibial band) pain on right side. IT band issues noted as current concern - common overuse injury affecting outer knee/thigh area.",
+      "time_ms": 45216
+    },
+    {
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User loves Saucony Endorphin Speed running shoes - says they're the best shoes they've ever run in",
+      "time_ms": 45205
+    },
+    {
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User tried Saucony Endorphin Speed running shoes and loved them - says they're the best shoes they've ever run in. This is their preferred running shoe.",
+      "time_ms": 45203
+    },
+    {
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 45240
+    },
+    {
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "Kojin's marathon goal: sub-4 hour marathon. Recent performance: 2:05 half marathon last month. Current training status (as of Feb 7, 2026): Running 3-4 times per week, distances ranging from 4-16km, with longest recent run being 16km on Jan 31. Has been consistent through winter but run distances are shorter than typical marathon training would require.",
+      "time_ms": 45231
+    },
+    {
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 45192
+    },
+    {
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": true,
+      "remembered": true,
+      "remember_content": "User lives in Seattle and runs frequently in rainy weather. Needs/interested in wet weather running gear recommendations.",
+      "time_ms": 45217
+    }
+  ]
+}

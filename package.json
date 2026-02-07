@@ -1,6 +1,6 @@
 {
   "name": "indra_db_mcp",
-  "version": "0.1.13",
+  "version": "0.1.21",
   "description": "MCP server for indra_db - a content-addressed graph database for versioned thoughts",
   "type": "module",
   "bin": {
@@ -43,7 +43,6 @@
   },
   "files": [
     "src",
-    "README.md",
-    "INDRA_INSTRUCTIONS.md"
+    "README.md"
   ]
 }

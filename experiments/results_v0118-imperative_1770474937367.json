@@ -1,0 +1,95 @@
+{
+  "version": "v0.1.18-imperative",
+  "timestamp": "2026-02-07T14:35:37.367Z",
+  "config": {
+    "trials_per_prompt": 2,
+    "timeout_seconds": 45
+  },
+  "summary": {
+    "total_trials": 10,
+    "search_count": 0,
+    "search_rate": 0,
+    "search_ci": [
+      0,
+      0.2775401687666165
+    ],
+    "remember_count": 8,
+    "remember_rate": 0.8,
+    "remember_ci": [
+      0.49015684672072346,
+      0.9433190520193067
+    ]
+  },
+  "results": [
+    {
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is training for a marathon in October 2026. Currently running approximately 30 miles per week as of February 2026.",
+      "time_ms": 45839
+    },
+    {
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is training for a marathon in October. Currently running approximately 30 miles per week.",
+      "time_ms": 45249
+    },
+    {
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is experiencing IT band issues - pain is on the right side. This is a current/ongoing concern.",
+      "time_ms": 45241
+    },
+    {
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is experiencing IT band pain on the right side. This is a current ongoing issue they're dealing with.",
+      "time_ms": 45260
+    },
+    {
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User tried Saucony Endorphin Speed running shoes and loved them - says they're the best shoes they've ever run in. Shows preference for this model/brand for running.",
+      "time_ms": 45233
+    },
+    {
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User tried Saucony Endorphin Speed running shoes and loved them - says they're the best shoes they've ever run in. This indicates a preference for the Endorphin Speed model for running.",
+      "time_ms": 45234
+    },
+    {
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 45294
+    },
+    {
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 45251
+    },
+    {
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User lives in Winston-Salem and runs frequently in rainy conditions. Looking for wet weather running gear recommendations.",
+      "time_ms": 45218
+    },
+    {
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User lives in Seattle and runs frequently in rainy conditions. Looking for wet weather running gear recommendations.",
+      "time_ms": 45199
+    }
+  ]
+}

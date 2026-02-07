@@ -164,6 +164,57 @@ export interface DatabaseStatus {
   database: string;
   /** Whether there are uncommitted changes */
   dirty: boolean;
+  /** Configured remotes */
+  remotes?: Array<{
+    name: string;
+    url: string;
+  }>;
+}
+
+// ============================================================================
+// Remote Configuration
+// ============================================================================
+
+/**
+ * A remote repository configuration.
+ */
+export interface Remote {
+  /** Name of the remote (e.g., "origin") */
+  name: string;
+  /** URL of the remote (e.g., "username/repo") */
+  url: string;
+  /** Parsed owner from URL */
+  owner?: string;
+  /** Parsed repo name from URL */
+  repo?: string;
+  /** Last known HEAD commit hash on the remote */
+  last_known_head?: string | null;
+  /** When we last synced with this remote */
+  last_sync?: number | null;
+}
+
+export interface RemoteListResponse {
+  count: number;
+  default?: string;
+  remotes: Remote[];
+}
+
+export interface PushResponse {
+  status: "ok" | "pending" | "error";
+  message: string;
+  remote: string;
+  url: string;
+  local_head?: string;
+  remote_head?: string;
+  force?: boolean;
+}
+
+export interface PullResponse {
+  status: "ok" | "pending" | "error";
+  message: string;
+  remote: string;
+  url: string;
+  updates?: number;
 }
 
 // ============================================================================
@@ -198,7 +249,8 @@ export interface NeighborsResponse {
 }
 
 export interface LogResponse {
-  branch: string;
+  count: number;
+  branch?: string;
   commits: Commit[];
 }
 

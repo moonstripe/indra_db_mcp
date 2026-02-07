@@ -7,8 +7,9 @@
  * DESIGN PRINCIPLES:
  * 1. Minimal tools - each tool does ONE thing well
  * 2. Auto-commit - every mutation persists immediately
- * 3. Self-contained - no tool depends on another being called first
- * 4. Clear purpose - tool names match what users would say
+ * 3. Auto-sync - pull before search, push after remember
+ * 4. Self-contained - no tool depends on another being called first
+ * 5. Clear purpose - tool names match what users would say
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -21,57 +22,158 @@ import { IndraError } from "./types.js";
 // Server Setup
 // ============================================================================
 
-const SERVER_INSTRUCTIONS = `# Indra: User's Personal Knowledge Base
-
-You have access to **Indra**, the user's personal notes system. Help them build and use it.
-
-## PRIMARY TOOLS
-
-### \`indra_remember\` - Save information
-\`\`\`
-indra_remember(content="User prefers Hokas for arch support")
-indra_remember(content="Updated: now using Brooks", id="shoe-preference")  // updates existing
-\`\`\`
-
-### \`indra_search\` - Find prior notes
-\`\`\`
-indra_search(query="shoe preferences")
-indra_search(query="*")  // list all notes
-\`\`\`
-
-## THE PATTERN
-
-1. **Before answering**: \`indra_search\` to check for relevant notes
-2. **Answer the question**: Use any context you found
-3. **After learning something**: \`indra_remember\` to save it
-
-## IMPORTANT
-
-Adding notes is **helping the user**, not extra work. They set up this system
-because they WANT you to track their preferences, context, and insights.
-
-**Don't ask permission - adding useful notes IS the service they want.**`;
-
-const server = new McpServer(
-  {
-    name: "indra_db",
-    version: "0.1.13",
-  },
-  {
-    instructions: SERVER_INSTRUCTIONS,
-  }
-);
+const server = new McpServer({
+  name: "indra_db",
+  version: "0.1.21",
+});
 
 const client = new IndraClient();
+
+// ============================================================================
+// Sync Helpers
+// ============================================================================
+
+interface SyncResult {
+  synced: boolean;
+  warning?: string;
+}
+
+/**
+ * Check if we have authentication configured.
+ * Auth is needed for:
+ * - Pushing to any base (you need to be logged in to write)
+ * - Pulling from private bases
+ * 
+ * Authentication can come from:
+ * - INDRA_API_KEY env var (legacy API key)
+ * - OAuth credentials file (from `indra login`)
+ */
+function hasAuth(): boolean {
+  // Check for legacy API key
+  if (process.env.INDRA_API_KEY) {
+    return true;
+  }
+  
+  // Check for OAuth credentials file
+  const { existsSync } = require("fs");
+  const { homedir } = require("os");
+  const { join } = require("path");
+  
+  // Check both possible credential locations
+  const credentialsPaths = [
+    join(homedir(), "Library", "Application Support", "indra", "credentials.json"),
+    join(homedir(), ".config", "indra", "credentials.json"),
+  ];
+  
+  for (const path of credentialsPaths) {
+    if (existsSync(path)) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+/**
+ * Attempt to pull from remote before read operations.
+ * Uses hash comparison for fast merge (ORT-style).
+ * Returns warning message if sync failed, but never throws.
+ * 
+ * Pull behavior:
+ * - Public bases: works without auth
+ * - Private bases: requires INDRA_API_KEY
+ * - No remote configured: silently skip (local-only mode is fine)
+ */
+async function tryPullSync(): Promise<SyncResult> {
+  try {
+    // Check if remote is configured
+    const remotes = await client.remoteList();
+    if (remotes.count === 0) {
+      return { synced: false }; // No remote, that's fine - local only mode
+    }
+    
+    const result = await client.pull();
+    if (result.status === "ok") {
+      return { synced: true };
+    } else if (result.status === "pending") {
+      // API not connected yet - this is expected during development
+      return { synced: false };
+    } else if (result.message?.includes("Not found")) {
+      // Remote doesn't exist yet or is private without auth - that's ok for reads
+      return { synced: false };
+    } else {
+      return { synced: false, warning: `Sync: ${result.message}` };
+    }
+  } catch (error) {
+    // Network error or other issue - don't block the operation
+    const msg = error instanceof Error ? error.message : String(error);
+    // Only warn if it's not a "no remote" or "not found" error
+    if (!msg.includes("not found") && !msg.includes("No remote") && !msg.includes("Not found")) {
+      return { synced: false, warning: `Sync unavailable: ${msg}` };
+    }
+    return { synced: false };
+  }
+}
+
+/**
+ * Attempt to push to remote after write operations.
+ * Returns warning message if sync failed, but never throws.
+ * 
+ * Push behavior:
+ * - Always requires auth (you need to be logged in to write)
+ * - No remote configured: silently skip
+ * - No auth: skip silently (user is in local-only mode)
+ */
+async function tryPushSync(): Promise<SyncResult> {
+  try {
+    // Check if remote is configured
+    const remotes = await client.remoteList();
+    if (remotes.count === 0) {
+      return { synced: false }; // No remote, that's fine - local only mode
+    }
+    
+    // Check if we have auth - push always requires it
+    if (!hasAuth()) {
+      // No auth, but that's fine - user is working locally
+      // They can push later with `indra login` + `indra push`
+      return { synced: false };
+    }
+    
+    const result = await client.push();
+    if (result.status === "ok") {
+      return { synced: true };
+    } else if (result.status === "pending") {
+      // API not connected yet - this is expected during development
+      return { synced: false };
+    } else {
+      return { synced: false, warning: `Sync: ${result.message}` };
+    }
+  } catch (error) {
+    // Network error or other issue - don't block the operation
+    const msg = error instanceof Error ? error.message : String(error);
+    if (!msg.includes("not found") && !msg.includes("No remote")) {
+      return { synced: false, warning: `Sync unavailable: ${msg}` };
+    }
+    return { synced: false };
+  }
+}
 
 // ============================================================================
 // Helper: Format responses for LLM consumption
 // ============================================================================
 
-function formatSuccess(data: unknown, context?: string): { content: Array<{ type: "text"; text: string }> } {
-  const response = context 
+function formatSuccess(
+  data: unknown, 
+  context?: string,
+  syncWarning?: string
+): { content: Array<{ type: "text"; text: string }> } {
+  let response = context 
     ? `${context}\n\n${JSON.stringify(data, null, 2)}`
     : JSON.stringify(data, null, 2);
+  
+  if (syncWarning) {
+    response = `⚠️ ${syncWarning}\n\n${response}`;
+  }
   
   return {
     content: [{ type: "text", text: response }],
@@ -104,22 +206,17 @@ function formatError(error: unknown): { content: Array<{ type: "text"; text: str
 
 server.tool(
   "indra_remember",
-  `Save a note to the user's personal knowledge base.
+  `Save information to improve future conversations.
 
-USE THIS WHEN YOU:
-- Learn something about the user (preferences, context, situation)
-- Make a recommendation worth preserving
-- Discover a pattern or insight
-- Want to record something for future reference
+Every note you save makes you more helpful next time:
+- User preferences → Better recommendations
+- Context/situation → More relevant answers  
+- Your recommendations → Continuity of advice
 
-EXAMPLES:
-- "User prefers Hokas over Altras for arch support"
-- "Currently recovering from plantar fasciitis, resting foot"
-- "Project deadline is March 15, 2026"
-- "Recommended cycling as cross-training during injury recovery"
+The user set up this system because they WANT you to remember things.
+Saving notes IS the service - don't ask permission, just do it.
 
-The note is saved immediately and will be findable via indra_search.
-If you provide an existing ID, it updates that note instead of creating new.`,
+Call BEFORE responding when you learn something worth keeping.`,
   {
     content: z.string().describe("The note to save - be specific and self-contained"),
     id: z.string().optional().describe("Optional ID to update existing note, or memorable ID for new note"),
@@ -133,9 +230,14 @@ If you provide an existing ID, it updates that note instead of creating new.`,
           if (existing) {
             // Update existing thought
             const thought = await client.updateThought(id, content);
+            
+            // Push after write
+            const syncResult = await tryPushSync();
+            
             return formatSuccess(
               { id: thought.id, content: thought.content, updated: true },
-              `✅ Updated note "${id}"`
+              `✅ Updated note "${id}"`,
+              syncResult.warning
             );
           }
         } catch {
@@ -145,9 +247,14 @@ If you provide an existing ID, it updates that note instead of creating new.`,
       
       // Create new thought
       const thought = await client.createThought(content, { id });
+      
+      // Push after write
+      const syncResult = await tryPushSync();
+      
       return formatSuccess(
         { id: thought.id, content: thought.content, created: true },
-        `✅ Saved note "${thought.id}"`
+        `✅ Saved note "${thought.id}"`,
+        syncResult.warning
       );
     } catch (error) {
       return formatError(error);
@@ -161,52 +268,54 @@ If you provide an existing ID, it updates that note instead of creating new.`,
 
 server.tool(
   "indra_search",
-  `Search the user's notes by meaning, or list all notes.
+  `Recall what you know about this user and topic.
 
-USE THIS WHEN:
-- Starting to answer a question (check for prior context)
-- The user asks about preferences or past decisions
-- You want to see what's been recorded
-- Looking for related information
+You may have valuable context from previous conversations:
+- Past preferences and decisions
+- Ongoing situations or goals
+- Previous recommendations you made
 
-SEARCH MODES:
-- Semantic search: indra_search(query="shoe recommendations")
-- List all notes: indra_search(query="*")
-
-Returns notes ranked by relevance with similarity scores.`,
+Always worth checking - takes milliseconds, could save back-and-forth.`,
   {
     query: z.string().describe('What to search for, or "*" to list all notes'),
     limit: z.number().min(1).max(50).default(10).describe("Maximum results to return"),
   },
   async ({ query, limit }) => {
     try {
+      // Pull before read to get latest from remote
+      const syncResult = await tryPullSync();
+      
       // Special case: list all
       if (query === "*") {
         const result = await client.listThoughts();
         if (result.count === 0) {
-          return formatSuccess(
-            { count: 0, notes: [] },
-            `📭 No notes yet. Use indra_remember to save some!`
-          );
-        }
         return formatSuccess(
-          { count: result.count, notes: result.thoughts },
-          `📋 Found ${result.count} note(s):`
+          { count: 0, notes: [] },
+          `📭 No notes yet. Use indra_remember to save some!`,
+          syncResult.warning
         );
+        }
+      return formatSuccess(
+        { count: result.count, notes: result.thoughts },
+        `📋 Found ${result.count} note(s):`,
+        syncResult.warning
+      );
       }
       
       // Semantic search
       const result = await client.search(query, limit);
       if (result.count === 0) {
-        return formatSuccess(
-          { query, count: 0, results: [] },
-          `📭 No notes found matching "${query}"`
-        );
-      }
       return formatSuccess(
-        { query, count: result.count, results: result.results },
-        `🔍 Found ${result.count} note(s) matching "${query}":`
+        { query, count: 0, results: [] },
+        `📭 No notes found matching "${query}"`,
+        syncResult.warning
       );
+      }
+    return formatSuccess(
+      { query, count: result.count, results: result.results },
+      `🔍 Found ${result.count} note(s) matching "${query}":`,
+      syncResult.warning
+    );
     } catch (error) {
       return formatError(error);
     }
@@ -232,12 +341,35 @@ Use this to orient yourself at the start of a session.`,
     try {
       const status = await client.status();
       const thoughts = await client.listThoughts();
+      
+      // Check remote configuration
+      let remoteInfo: { configured: boolean; name?: string; url?: string } = { configured: false };
+      try {
+        const remotes = await client.remoteList();
+        if (remotes.count > 0 && remotes.remotes[0]) {
+          remoteInfo = {
+            configured: true,
+            name: remotes.remotes[0].name,
+            url: remotes.remotes[0].url,
+          };
+        }
+      } catch {
+        // No remotes configured
+      }
+      
+      // Check auth status
+      const authStatus = hasAuth() 
+        ? "authenticated (API key set)" 
+        : "not authenticated (local-only mode)";
+      
       return formatSuccess(
         { 
           database: status.database,
           branch: status.branch,
           noteCount: thoughts.count,
-          dirty: status.dirty
+          dirty: status.dirty,
+          remote: remoteInfo,
+          auth: authStatus,
         },
         `📊 Notes database status:`
       );
@@ -254,8 +386,12 @@ Use this to orient yourself at the start of a session.`,
 async function main() {
   const transport = new StdioServerTransport();
   
-  console.error(`[indra_db_mcp] Starting server v0.1.11...`);
+  console.error(`[indra_db_mcp] Starting server v0.1.21...`);
   console.error(`[indra_db_mcp] Database path: ${client.getDatabasePath()}`);
+  console.error(`[indra_db_mcp] API URL: ${client.getApiUrl()}`);
+  if (client.isDevMode()) {
+    console.error(`[indra_db_mcp] ⚠️  DEV MODE ACTIVE`);
+  }
   
   // Initialize the client (ensures binary exists, creates DB if needed)
   try {
