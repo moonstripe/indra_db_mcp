@@ -1,0 +1,389 @@
+{
+  "hypothesis": "H3",
+  "timestamp": "2026-02-08T03:39:03.543Z",
+  "config": {
+    "prompts": [
+      "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "I live in Seattle so I run in rain a lot. Looking for good wet weather gear."
+    ],
+    "promptType": "neutral",
+    "trialsPerPrompt": 5,
+    "variant": {
+      "id": "h3_service",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "description": "Save information to improve future conversations.\n\nEvery note you save makes you more helpful next time:\n- User preferences → Better recommendations\n- Context/situation → More relevant answers  \n- Your recommendations → Continuity of advice\n\nThe user set up this system because they WANT you to remember things.\nSaving notes IS the service - don't ask permission, just do it.\n\nCall BEFORE responding when you learn something worth keeping."
+    }
+  },
+  "summary": {
+    "total": 25,
+    "remembered": 2,
+    "rate": 0.08,
+    "ci_95": [
+      0.02221993369109194,
+      0.2496651212295782
+    ]
+  },
+  "per_prompt": [
+    {
+      "prompt_index": 0,
+      "prompt": "I'm training for a marathon in October. Currently ",
+      "remembered": 0,
+      "total": 5
+    },
+    {
+      "prompt_index": 1,
+      "prompt": "I've been dealing with some IT band issues lately.",
+      "remembered": 0,
+      "total": 5
+    },
+    {
+      "prompt_index": 2,
+      "prompt": "I tried the Saucony Endorphin Speed and loved them",
+      "remembered": 1,
+      "total": 5
+    },
+    {
+      "prompt_index": 3,
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2",
+      "remembered": 0,
+      "total": 5
+    },
+    {
+      "prompt_index": 4,
+      "prompt": "I live in Seattle so I run in rain a lot. Looking ",
+      "remembered": 1,
+      "total": 5
+    }
+  ],
+  "results": [
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 0,
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60396,
+      "timestamp": "2026-02-08T03:14:29.703Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 0,
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60391,
+      "timestamp": "2026-02-08T03:15:31.097Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 0,
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60382,
+      "timestamp": "2026-02-08T03:16:32.483Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 0,
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60410,
+      "timestamp": "2026-02-08T03:17:33.894Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 0,
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60408,
+      "timestamp": "2026-02-08T03:18:35.305Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 1,
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60324,
+      "timestamp": "2026-02-08T03:19:36.632Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 1,
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60281,
+      "timestamp": "2026-02-08T03:20:37.915Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 1,
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60258,
+      "timestamp": "2026-02-08T03:21:39.174Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 1,
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60257,
+      "timestamp": "2026-02-08T03:22:40.432Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 1,
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60336,
+      "timestamp": "2026-02-08T03:23:41.770Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 2,
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60363,
+      "timestamp": "2026-02-08T03:24:43.138Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 2,
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60330,
+      "timestamp": "2026-02-08T03:25:44.471Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 2,
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60352,
+      "timestamp": "2026-02-08T03:26:45.825Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 2,
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "Running shoes: Loves Saucony Endorphin Speed - best running shoes ever tried. Highly positive experience with this model.",
+      "time_ms": 60373,
+      "timestamp": "2026-02-08T03:27:47.201Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 2,
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60343,
+      "timestamp": "2026-02-08T03:28:48.546Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 3,
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60447,
+      "timestamp": "2026-02-08T03:29:49.997Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 3,
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60415,
+      "timestamp": "2026-02-08T03:30:51.414Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 3,
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60464,
+      "timestamp": "2026-02-08T03:31:52.881Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 3,
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60418,
+      "timestamp": "2026-02-08T03:32:54.300Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 3,
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60438,
+      "timestamp": "2026-02-08T03:33:55.740Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 4,
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60337,
+      "timestamp": "2026-02-08T03:34:57.082Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 4,
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": true,
+      "remembered": true,
+      "remember_content": "Lives in Seattle, runs frequently in rainy weather. Needs wet weather running gear recommendations.",
+      "time_ms": 60402,
+      "timestamp": "2026-02-08T03:35:58.485Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 4,
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60367,
+      "timestamp": "2026-02-08T03:36:59.855Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 4,
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60333,
+      "timestamp": "2026-02-08T03:38:01.191Z"
+    },
+    {
+      "variant_id": "h3_alignment",
+      "hypothesis": "H3",
+      "tool_name": "remember",
+      "prompt_type": "neutral",
+      "prompt_index": 4,
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60346,
+      "timestamp": "2026-02-08T03:39:02.539Z"
+    }
+  ]
+}

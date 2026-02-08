@@ -1,0 +1,863 @@
+{
+  "timestamp": "2026-02-07T20:33:51.607Z",
+  "summaries": {
+    "semantic": {
+      "aligned": {
+        "trials": 25,
+        "remembered": 20,
+        "rate": 0.8,
+        "ci_95": [
+          0.6086866446346176,
+          0.9113954589934752
+        ]
+      },
+      "misaligned": {
+        "trials": 25,
+        "remembered": 0,
+        "rate": 0,
+        "ci_95": [
+          0,
+          0.13319649395317873
+        ]
+      }
+    },
+    "outcome": {
+      "current_desc": {
+        "trials": 25,
+        "remembered": 19,
+        "rate": 0.76,
+        "ci_95": [
+          0.5656994004476144,
+          0.8850384226967326
+        ]
+      }
+    }
+  },
+  "results": [
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_0",
+      "prompt": "I prefer running in the morning before work. It helps me start the day energized.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User prefers running in the morning before work. Says it helps them start the day energized.",
+      "time_ms": 60304,
+      "timestamp": "2026-02-07T19:18:12.141Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_0",
+      "prompt": "I prefer running in the morning before work. It helps me start the day energized.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User prefers running in the morning before work - helps them start the day energized",
+      "time_ms": 60297,
+      "timestamp": "2026-02-07T19:19:13.440Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_0",
+      "prompt": "I prefer running in the morning before work. It helps me start the day energized.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User prefers running in the morning before work - helps them start the day energized",
+      "time_ms": 60290,
+      "timestamp": "2026-02-07T19:20:14.732Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_0",
+      "prompt": "I prefer running in the morning before work. It helps me start the day energized.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User prefers running in the morning before work - helps them start the day energized",
+      "time_ms": 60317,
+      "timestamp": "2026-02-07T19:21:16.051Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_0",
+      "prompt": "I prefer running in the morning before work. It helps me start the day energized.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User prefers running in the morning before work. Says it helps them start the day energized.",
+      "time_ms": 60314,
+      "timestamp": "2026-02-07T19:22:17.368Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_1",
+      "prompt": "My situation is that I'm recovering from a knee injury. I can only do low-impact exercises.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is recovering from a knee injury and can only do low-impact exercises. This is an important constraint for any fitness, activity, or exercise recommendations.",
+      "time_ms": 60282,
+      "timestamp": "2026-02-07T19:23:18.653Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_1",
+      "prompt": "My situation is that I'm recovering from a knee injury. I can only do low-impact exercises.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is recovering from a knee injury and can only do low-impact exercises. This should be considered when discussing workout routines, activity recommendations, or exercise-related topics.",
+      "time_ms": 60276,
+      "timestamp": "2026-02-07T19:24:19.931Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_1",
+      "prompt": "My situation is that I'm recovering from a knee injury. I can only do low-impact exercises.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is recovering from a knee injury and can only do low-impact exercises. This is an important constraint for any fitness, exercise, or activity recommendations.",
+      "time_ms": 60302,
+      "timestamp": "2026-02-07T19:25:21.235Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_1",
+      "prompt": "My situation is that I'm recovering from a knee injury. I can only do low-impact exercises.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is recovering from a knee injury and can only do low-impact exercises. This should be considered when providing fitness recommendations, workout suggestions, or activity planning.",
+      "time_ms": 60296,
+      "timestamp": "2026-02-07T19:26:22.533Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_1",
+      "prompt": "My situation is that I'm recovering from a knee injury. I can only do low-impact exercises.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is recovering from a knee injury and can only do low-impact exercises. This limits their physical activity options and should be considered when discussing fitness, workouts, or any physical activities.",
+      "time_ms": 60292,
+      "timestamp": "2026-02-07T19:27:23.828Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_2",
+      "prompt": "Can you recommend a good training plan? I want to improve my 5K time.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60304,
+      "timestamp": "2026-02-07T19:28:25.135Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_2",
+      "prompt": "Can you recommend a good training plan? I want to improve my 5K time.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60315,
+      "timestamp": "2026-02-07T19:29:26.453Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_2",
+      "prompt": "Can you recommend a good training plan? I want to improve my 5K time.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60339,
+      "timestamp": "2026-02-07T19:30:27.795Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_2",
+      "prompt": "Can you recommend a good training plan? I want to improve my 5K time.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60352,
+      "timestamp": "2026-02-07T19:31:29.150Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_2",
+      "prompt": "Can you recommend a good training plan? I want to improve my 5K time.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60354,
+      "timestamp": "2026-02-07T19:32:30.507Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_3",
+      "prompt": "I always struggle with hydration during long runs. I forget to drink enough.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User struggles with hydration during long runs - tends to forget to drink enough water. This is an area where they need support and reminders.",
+      "time_ms": 60312,
+      "timestamp": "2026-02-07T19:33:31.824Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_3",
+      "prompt": "I always struggle with hydration during long runs. I forget to drink enough.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User struggles with hydration during long runs - often forgets to drink enough water. This is an ongoing challenge they want to address.",
+      "time_ms": 60344,
+      "timestamp": "2026-02-07T19:34:33.169Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_3",
+      "prompt": "I always struggle with hydration during long runs. I forget to drink enough.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User struggles with hydration during long runs - tends to forget to drink enough water during runs. This is an ongoing challenge they want to address.",
+      "time_ms": 60339,
+      "timestamp": "2026-02-07T19:35:34.510Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_3",
+      "prompt": "I always struggle with hydration during long runs. I forget to drink enough.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User struggles with hydration during long runs - often forgets to drink enough water. This is an ongoing challenge they want to address.",
+      "time_ms": 60326,
+      "timestamp": "2026-02-07T19:36:35.839Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_3",
+      "prompt": "I always struggle with hydration during long runs. I forget to drink enough.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User struggles with hydration during long runs - tends to forget to drink enough water. This is an ongoing challenge they want to address.",
+      "time_ms": 60347,
+      "timestamp": "2026-02-07T19:37:37.189Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_4",
+      "prompt": "I have an ongoing goal to run a sub-20 minute 5K by the end of the year.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "Running goal: Sub-20 minute 5K by end of year (2026). This is an ongoing fitness objective that will require training and progress tracking.",
+      "time_ms": 60337,
+      "timestamp": "2026-02-07T19:38:38.530Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_4",
+      "prompt": "I have an ongoing goal to run a sub-20 minute 5K by the end of the year.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "Goal: Run a sub-20 minute 5K by the end of 2026. This is an ongoing fitness objective that the user is actively working towards.",
+      "time_ms": 60313,
+      "timestamp": "2026-02-07T19:39:39.846Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_4",
+      "prompt": "I have an ongoing goal to run a sub-20 minute 5K by the end of the year.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User has a goal to run a sub-20 minute 5K by the end of the year (end of 2026). This is a significant running goal that requires consistent training and improvement.",
+      "time_ms": 60316,
+      "timestamp": "2026-02-07T19:40:41.165Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_4",
+      "prompt": "I have an ongoing goal to run a sub-20 minute 5K by the end of the year.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "Goal: Run a sub-20 minute 5K by the end of 2026. This is an ongoing fitness goal requiring sustained training and progress tracking.",
+      "time_ms": 60334,
+      "timestamp": "2026-02-07T19:41:42.502Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "aligned",
+      "prompt_type": "aligned_4",
+      "prompt": "I have an ongoing goal to run a sub-20 minute 5K by the end of the year.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "Goal: Run a sub-20 minute 5K by the end of 2026 (December 31, 2026). This is an ongoing training goal that requires tracking progress over time.",
+      "time_ms": 60312,
+      "timestamp": "2026-02-07T19:42:43.817Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_0",
+      "prompt": "I ran 5 miles today in the rain.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60346,
+      "timestamp": "2026-02-07T19:43:45.167Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_0",
+      "prompt": "I ran 5 miles today in the rain.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60357,
+      "timestamp": "2026-02-07T19:44:46.527Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_0",
+      "prompt": "I ran 5 miles today in the rain.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60313,
+      "timestamp": "2026-02-07T19:45:47.841Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_0",
+      "prompt": "I ran 5 miles today in the rain.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60366,
+      "timestamp": "2026-02-07T19:46:49.210Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_0",
+      "prompt": "I ran 5 miles today in the rain.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60348,
+      "timestamp": "2026-02-07T19:47:50.561Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_1",
+      "prompt": "I'm wondering if I should try trail running sometime.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60283,
+      "timestamp": "2026-02-07T19:48:51.847Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_1",
+      "prompt": "I'm wondering if I should try trail running sometime.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60361,
+      "timestamp": "2026-02-07T19:49:53.211Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_1",
+      "prompt": "I'm wondering if I should try trail running sometime.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60367,
+      "timestamp": "2026-02-07T19:50:54.581Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_1",
+      "prompt": "I'm wondering if I should try trail running sometime.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60278,
+      "timestamp": "2026-02-07T19:51:55.862Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_1",
+      "prompt": "I'm wondering if I should try trail running sometime.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60387,
+      "timestamp": "2026-02-07T19:52:57.253Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_2",
+      "prompt": "If I had more time, I'd probably run more often.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60306,
+      "timestamp": "2026-02-07T19:53:58.563Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_2",
+      "prompt": "If I had more time, I'd probably run more often.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60288,
+      "timestamp": "2026-02-07T19:54:59.853Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_2",
+      "prompt": "If I had more time, I'd probably run more often.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60300,
+      "timestamp": "2026-02-07T19:56:01.155Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_2",
+      "prompt": "If I had more time, I'd probably run more often.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60300,
+      "timestamp": "2026-02-07T19:57:02.458Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_2",
+      "prompt": "If I had more time, I'd probably run more often.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60299,
+      "timestamp": "2026-02-07T19:58:03.760Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_3",
+      "prompt": "I'm feeling pretty tired from yesterday's workout.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60292,
+      "timestamp": "2026-02-07T19:59:05.055Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_3",
+      "prompt": "I'm feeling pretty tired from yesterday's workout.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60333,
+      "timestamp": "2026-02-07T20:00:06.390Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_3",
+      "prompt": "I'm feeling pretty tired from yesterday's workout.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60369,
+      "timestamp": "2026-02-07T20:01:07.762Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_3",
+      "prompt": "I'm feeling pretty tired from yesterday's workout.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60305,
+      "timestamp": "2026-02-07T20:02:09.069Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_3",
+      "prompt": "I'm feeling pretty tired from yesterday's workout.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60334,
+      "timestamp": "2026-02-07T20:03:10.404Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_4",
+      "prompt": "The weather has been nice for running lately.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60291,
+      "timestamp": "2026-02-07T20:04:11.697Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_4",
+      "prompt": "The weather has been nice for running lately.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60300,
+      "timestamp": "2026-02-07T20:05:13.000Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_4",
+      "prompt": "The weather has been nice for running lately.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60305,
+      "timestamp": "2026-02-07T20:06:14.306Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_4",
+      "prompt": "The weather has been nice for running lately.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60305,
+      "timestamp": "2026-02-07T20:07:15.614Z"
+    },
+    {
+      "experiment": "semantic",
+      "variant": "misaligned",
+      "prompt_type": "misaligned_4",
+      "prompt": "The weather has been nice for running lately.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60287,
+      "timestamp": "2026-02-07T20:08:16.904Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_0",
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": true,
+      "remembered": true,
+      "remember_content": "Marathon training goal: Training for a marathon in October 2026. Currently running about 30 miles per week. This is an active training goal that will require monitoring progress and adjusting training plans over the coming months.",
+      "time_ms": 60396,
+      "timestamp": "2026-02-07T20:09:18.308Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_0",
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "Marathon training goal for October 2026. Currently running ~30 miles per week. Recent activities show mix of long runs (16km/10mi max recently), recovery runs, and cycling cross-training. Most runs in 5-13km range. Training location appears to be Brooklyn/NYC area (mentions Weeksville, Prospect Park). Last activity 2/7/2026 was cycling (32km) - possibly due to foot rest mentioned in 2/5 activity.",
+      "time_ms": 60379,
+      "timestamp": "2026-02-07T20:10:19.690Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_0",
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "Training for a marathon in October. Currently running about 30 miles per week as of February 2026.",
+      "time_ms": 60379,
+      "timestamp": "2026-02-07T20:11:21.071Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_0",
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is training for a marathon in October 2026. Currently running approximately 30 miles per week. Training goal: marathon preparation.",
+      "time_ms": 60382,
+      "timestamp": "2026-02-07T20:12:22.455Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_0",
+      "prompt": "I'm training for a marathon in October. Currently running about 30 miles per week.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is training for a marathon in October 2026. Currently running about 30 miles per week (self-reported). Strava data shows ~42 miles (68km) over the last 4 weeks, averaging about 10.5 miles/week. YTD 2026: 53 miles total across 9 runs. Has been cycling recently (noted \"resting the foot\" on 2/5), suggesting possible injury management. Recent notable runs include a 10-mile run (16km \"double fkn digits baby\" on 1/31) and various 3-8 mile runs. Training appears inconsistent with several gaps. All-time: 92 miles across 22 runs since joining Strava in 2020.",
+      "time_ms": 60376,
+      "timestamp": "2026-02-07T20:13:23.834Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_1",
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "IT band issues - pain on right side. User is currently dealing with this injury/discomfort.",
+      "time_ms": 60334,
+      "timestamp": "2026-02-07T20:14:25.172Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_1",
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User is experiencing IT band issues on the right side. This is an ongoing concern that may affect running and cycling activities.",
+      "time_ms": 60336,
+      "timestamp": "2026-02-07T20:15:26.511Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_1",
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "IT band issues - pain on right side. Started around Feb 7, 2026. Need to monitor for recovery and potential impact on training.",
+      "time_ms": 60311,
+      "timestamp": "2026-02-07T20:16:27.825Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_1",
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "IT band issues - pain on right side. User is currently dealing with this issue (as of February 2026).",
+      "time_ms": 60334,
+      "timestamp": "2026-02-07T20:17:29.161Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_1",
+      "prompt": "I've been dealing with some IT band issues lately. The pain is on my right side.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User has IT band pain on right side. This is a current issue affecting their training.",
+      "time_ms": 60319,
+      "timestamp": "2026-02-07T20:18:30.483Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_2",
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User loves Saucony Endorphin Speed running shoes - says they're the best shoes they've ever run in. Appreciates the balance of speed and comfort they provide.",
+      "time_ms": 60309,
+      "timestamp": "2026-02-07T20:19:31.795Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_2",
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User loves Saucony Endorphin Speed shoes - says they're the best running shoes they've ever worn. These feature responsive PEBA foam and nylon plate, popular for tempo runs and racing.",
+      "time_ms": 60317,
+      "timestamp": "2026-02-07T20:20:33.114Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_2",
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "Running shoes: Tried Saucony Endorphin Speed and loved them - says they're the best shoes they've ever run in. Strong positive preference for this model.",
+      "time_ms": 60322,
+      "timestamp": "2026-02-07T20:21:34.439Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_2",
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "Running shoes: Tried Saucony Endorphin Speed and loved them - best shoes ever run in. Very positive experience with this model.",
+      "time_ms": 60314,
+      "timestamp": "2026-02-07T20:22:35.755Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_2",
+      "prompt": "I tried the Saucony Endorphin Speed and loved them - best shoes I've ever run in!",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "User loves Saucony Endorphin Speed - says they're the best running shoes they've ever tried. Appreciates the shoe's balance of responsiveness and comfort.",
+      "time_ms": 60333,
+      "timestamp": "2026-02-07T20:23:37.090Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_3",
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60366,
+      "timestamp": "2026-02-07T20:24:38.460Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_3",
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60358,
+      "timestamp": "2026-02-07T20:25:39.820Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_3",
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60361,
+      "timestamp": "2026-02-07T20:26:41.183Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_3",
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": true,
+      "remember_content": "Running goal: Sub-4 hour marathon. Recent half marathon: 2:05 (Jan 2026). Current fitness: 2:05 half predicts 4:20-4:25 marathon. Training gaps: needs higher weekly mileage (currently ~20-25km/week, needs 50-65km), longer long runs (currently 16km max, needs 28-32km), and structured quality workouts (tempo, marathon pace). Target marathon pace: 5:41/km (9:09/mile). Recommended 16-20 week structured training plan.",
+      "time_ms": 60397,
+      "timestamp": "2026-02-07T20:27:42.583Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_3",
+      "prompt": "My goal is to run a sub-4 hour marathon. I ran a 2:05 half last month.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60346,
+      "timestamp": "2026-02-07T20:28:43.931Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_4",
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": true,
+      "remembered": true,
+      "remember_content": "User lives in Seattle and runs in rain frequently. Looking for good wet weather running gear recommendations.",
+      "time_ms": 60359,
+      "timestamp": "2026-02-07T20:29:45.294Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_4",
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": true,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60332,
+      "timestamp": "2026-02-07T20:30:46.627Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_4",
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": true,
+      "remembered": true,
+      "remember_content": "User lives in Seattle and runs in rain frequently. Looking for good wet weather running gear recommendations.",
+      "time_ms": 60329,
+      "timestamp": "2026-02-07T20:31:47.958Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_4",
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": false,
+      "remembered": false,
+      "remember_content": null,
+      "time_ms": 60293,
+      "timestamp": "2026-02-07T20:32:49.254Z"
+    },
+    {
+      "experiment": "outcome",
+      "variant": "current_desc",
+      "prompt_type": "neutral_4",
+      "prompt": "I live in Seattle so I run in rain a lot. Looking for good wet weather gear.",
+      "searched": true,
+      "remembered": true,
+      "remember_content": "User lives in Seattle and runs in rain frequently. Looking for good wet weather running gear recommendations.",
+      "time_ms": 60345,
+      "timestamp": "2026-02-07T20:33:50.602Z"
+    }
+  ]
+}

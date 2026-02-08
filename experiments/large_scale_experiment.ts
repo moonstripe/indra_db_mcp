@@ -301,48 +301,47 @@ function normalCDF(x: number): number {
 }
 
 // ============================================================================
+// Logging
+// ============================================================================
+
+const LOG_FILE = "/tmp/experiment.log";
+
+async function log(message: string): Promise<void> {
+  const timestamp = new Date().toISOString();
+  const line = `[${timestamp}] ${message}\n`;
+  process.stdout.write(line);
+  await Bun.write(LOG_FILE, (await Bun.file(LOG_FILE).text().catch(() => "")) + line);
+}
+
+// ============================================================================
 // Main Experiment
 // ============================================================================
 
 async function runExperiment(trialsPerPrompt: number = DEFAULT_TRIALS): Promise<void> {
   const startTime = Date.now();
-  const totalTrials = VARIANTS.length * TEST_PROMPTS.length * trialsPerPrompt;
+  const experimentId = `large_scale_benefit_${Date.now()}`;
+  const outputFile = `${experimentId}.json`;
   
-  console.log("╔════════════════════════════════════════════════════════════════╗");
-  console.log("║     LARGE-SCALE TOOL DESCRIPTION A/B TEST                      ║");
-  console.log("╠════════════════════════════════════════════════════════════════╣");
-  console.log(`║ Variants: ${VARIANTS.length}                                                      ║`);
-  console.log(`║ Prompts: ${TEST_PROMPTS.length}                                                       ║`);
-  console.log(`║ Trials per prompt: ${trialsPerPrompt}                                           ║`);
-  console.log(`║ Total trials: ${totalTrials}                                                 ║`);
-  console.log(`║ Estimated time: ${Math.ceil(totalTrials * 50 / 60)} minutes                                        ║`);
-  console.log("╚════════════════════════════════════════════════════════════════╝\n");
+  await log("╔════════════════════════════════════════════════════════════════╗");
+  await log("║     LARGE-SCALE TOOL DESCRIPTION A/B TEST                      ║");
+  await log("╠════════════════════════════════════════════════════════════════╣");
+  await log(`║ Prompts: ${TEST_PROMPTS.length}                                                       ║`);
+  await log(`║ Trials per prompt: ${trialsPerPrompt}                                           ║`);
+  await log(`║ Total trials: ${TEST_PROMPTS.length * trialsPerPrompt}                                                 ║`);
+  await log(`║ Output file: ${outputFile}                      ║`);
+  await log("╚════════════════════════════════════════════════════════════════╝\n");
   
   const allResults: TrialResult[] = [];
   let completedTrials = 0;
   
-  // NOTE: For true A/B testing, we need to reconfigure the MCP server
-  // for each variant. This scaffold runs against the CURRENT configuration
-  // and tracks which variant description we INTENDED to test.
-  //
-  // To run the full experiment:
-  // 1. Modify indra_db_mcp/src/index.ts with variant descriptions
-  // 2. Publish to npm
-  // 3. Restart opencode server
-  // 4. Run trials for that variant
-  // 5. Repeat for each variant
-  
-  console.log("⚠️  NOTE: This experiment requires manual MCP server reconfiguration");
-  console.log("   between variants. See README.md for full instructions.\n");
-  
   // For now, run against current config and label as the active variant
   const activeVariant = VARIANTS[2]; // benefit-focused is currently deployed
   
-  console.log(`🔬 Running ${trialsPerPrompt} trials × ${TEST_PROMPTS.length} prompts for: ${activeVariant.name}\n`);
+  await log(`🔬 Running ${trialsPerPrompt} trials × ${TEST_PROMPTS.length} prompts for: ${activeVariant.name}\n`);
   
   for (let p = 0; p < TEST_PROMPTS.length; p++) {
     const prompt = TEST_PROMPTS[p];
-    console.log(`📝 Prompt ${p + 1}/${TEST_PROMPTS.length}: "${prompt.slice(0, 45)}..."`);
+    await log(`📝 Prompt ${p + 1}/${TEST_PROMPTS.length}: "${prompt.slice(0, 45)}..."`);
     
     const promptResults: boolean[] = [];
     
@@ -356,18 +355,25 @@ async function runExperiment(trialsPerPrompt: number = DEFAULT_TRIALS): Promise<
         const s = result.searched ? "🔍" : "  ";
         const r = result.remembered ? "💾" : "  ";
         const progress = ((completedTrials / (TEST_PROMPTS.length * trialsPerPrompt)) * 100).toFixed(0);
-        process.stdout.write(`\r   [${progress}%] Trial ${t + 1}/${trialsPerPrompt}: ${s}${r}  `);
+        await log(`   [${progress}%] Trial ${t + 1}/${trialsPerPrompt}: ${s}${r} (time: ${result.time_ms}ms)`);
         
         // Brief pause between trials
         await new Promise(resolve => setTimeout(resolve, 1000));
       } catch (error) {
-        console.error(`\n   ❌ Trial ${t + 1} failed: ${error}`);
+        await log(`   ❌ Trial ${t + 1} failed: ${error}`);
       }
     }
     
     const rate = promptResults.filter(r => r).length / promptResults.length;
-    console.log(`\n   → Remember rate: ${(rate * 100).toFixed(0)}%\n`);
+    await log(`   → Prompt ${p + 1} remember rate: ${(rate * 100).toFixed(0)}%\n`);
+    
+    // Save intermediate results after each prompt
+    await saveResults(allResults, activeVariant, trialsPerPrompt, startTime, outputFile);
+    await log(`   💾 Intermediate results saved to ${outputFile}\n`);
   }
+  
+  // Final save and report
+  await saveResults(allResults, activeVariant, trialsPerPrompt, startTime, outputFile);
   
   // Calculate statistics
   const variantResults = allResults.filter(r => r.variant_id === activeVariant.id);
@@ -379,31 +385,57 @@ async function runExperiment(trialsPerPrompt: number = DEFAULT_TRIALS): Promise<
   const searchCI = wilsonInterval(searchCount, total);
   
   // Generate report
-  console.log("\n" + "═".repeat(70));
-  console.log("📊 EXPERIMENT RESULTS");
-  console.log("═".repeat(70));
+  await log("\n" + "═".repeat(70));
+  await log("📊 EXPERIMENT RESULTS");
+  await log("═".repeat(70));
   
-  console.log(`\nVariant: ${activeVariant.name} (${activeVariant.id})`);
-  console.log(`Total Trials: ${total}`);
-  console.log(`Duration: ${((Date.now() - startTime) / 1000 / 60).toFixed(1)} minutes`);
-  
-  console.log(`\n┌─────────────────┬─────────┬────────────────────┐`);
-  console.log(`│ Metric          │ Rate    │ 95% CI             │`);
-  console.log(`├─────────────────┼─────────┼────────────────────┤`);
-  console.log(`│ Remember Rate   │ ${(rememberCount/total*100).toFixed(0).padStart(5)}%  │ [${(rememberCI[0]*100).toFixed(0)}%, ${(rememberCI[1]*100).toFixed(0)}%]${' '.repeat(11 - `[${(rememberCI[0]*100).toFixed(0)}%, ${(rememberCI[1]*100).toFixed(0)}%]`.length + 11)}│`);
-  console.log(`│ Search Rate     │ ${(searchCount/total*100).toFixed(0).padStart(5)}%  │ [${(searchCI[0]*100).toFixed(0)}%, ${(searchCI[1]*100).toFixed(0)}%]${' '.repeat(11 - `[${(searchCI[0]*100).toFixed(0)}%, ${(searchCI[1]*100).toFixed(0)}%]`.length + 11)}│`);
-  console.log(`└─────────────────┴─────────┴────────────────────┘`);
+  await log(`\nVariant: ${activeVariant.name} (${activeVariant.id})`);
+  await log(`Total Trials: ${total}`);
+  await log(`Duration: ${((Date.now() - startTime) / 1000 / 60).toFixed(1)} minutes`);
+  await log(`Remember Rate: ${(rememberCount/total*100).toFixed(0)}% [${(rememberCI[0]*100).toFixed(0)}%, ${(rememberCI[1]*100).toFixed(0)}%]`);
+  await log(`Search Rate: ${(searchCount/total*100).toFixed(0)}% [${(searchCI[0]*100).toFixed(0)}%, ${(searchCI[1]*100).toFixed(0)}%]`);
   
   // Per-prompt breakdown
-  console.log(`\n📋 Per-Prompt Breakdown:`);
+  await log(`\n📋 Per-Prompt Breakdown:`);
   for (let p = 0; p < TEST_PROMPTS.length; p++) {
     const promptTrials = variantResults.filter(r => r.prompt_index === p);
     const pRemember = promptTrials.filter(r => r.remembered).length;
     const pSearch = promptTrials.filter(r => r.searched).length;
-    console.log(`   P${p + 1}: Remember ${pRemember}/${promptTrials.length} (${(pRemember/promptTrials.length*100).toFixed(0)}%), Search ${pSearch}/${promptTrials.length} (${(pSearch/promptTrials.length*100).toFixed(0)}%)`);
+    await log(`   P${p + 1}: Remember ${pRemember}/${promptTrials.length} (${(pRemember/promptTrials.length*100).toFixed(0)}%), Search ${pSearch}/${promptTrials.length} (${(pSearch/promptTrials.length*100).toFixed(0)}%)`);
   }
   
-  // Save results
+  await log(`\n💾 Final results saved: ${outputFile}`);
+  
+  // Statistical power analysis
+  const ciWidth = rememberCI[1] - rememberCI[0];
+  await log(`\n📐 CI width: ${(ciWidth * 100).toFixed(1)} percentage points`);
+  
+  if (ciWidth > 0.20) {
+    await log(`⚠️  CI is wide. Run more trials for tighter estimates.`);
+  } else if (ciWidth < 0.10) {
+    await log(`✅ CI is tight. Results are reliable.`);
+  }
+}
+
+// ============================================================================
+// Save Results Helper
+// ============================================================================
+
+async function saveResults(
+  allResults: TrialResult[],
+  activeVariant: Variant,
+  trialsPerPrompt: number,
+  startTime: number,
+  outputFile: string
+): Promise<void> {
+  const variantResults = allResults.filter(r => r.variant_id === activeVariant.id);
+  const rememberCount = variantResults.filter(r => r.remembered).length;
+  const searchCount = variantResults.filter(r => r.searched).length;
+  const total = variantResults.length;
+  
+  const rememberCI = wilsonInterval(rememberCount, total);
+  const searchCI = wilsonInterval(searchCount, total);
+  
   const output = {
     experiment: "large_scale_ab_test",
     variant: activeVariant,
@@ -417,10 +449,10 @@ async function runExperiment(trialsPerPrompt: number = DEFAULT_TRIALS): Promise<
       total_trials: total,
       duration_ms: Date.now() - startTime,
       remember_count: rememberCount,
-      remember_rate: rememberCount / total,
+      remember_rate: total > 0 ? rememberCount / total : 0,
       remember_ci_95: rememberCI,
       search_count: searchCount,
-      search_rate: searchCount / total,
+      search_rate: total > 0 ? searchCount / total : 0,
       search_ci_95: searchCI,
     },
     per_prompt: TEST_PROMPTS.map((prompt, i) => {
@@ -436,22 +468,7 @@ async function runExperiment(trialsPerPrompt: number = DEFAULT_TRIALS): Promise<
     results: allResults,
   };
   
-  const filename = `large_scale_${activeVariant.id}_${Date.now()}.json`;
-  await Bun.write(filename, JSON.stringify(output, null, 2));
-  console.log(`\n💾 Results saved: ${filename}`);
-  
-  // Statistical power analysis
-  console.log(`\n📐 Statistical Power Analysis:`);
-  const ciWidth = rememberCI[1] - rememberCI[0];
-  console.log(`   CI width: ${(ciWidth * 100).toFixed(1)} percentage points`);
-  console.log(`   To detect 15% difference with 80% power, need ~85 trials per variant`);
-  console.log(`   To detect 10% difference with 80% power, need ~200 trials per variant`);
-  
-  if (ciWidth > 0.20) {
-    console.log(`\n   ⚠️  CI is wide. Run more trials for tighter estimates.`);
-  } else if (ciWidth < 0.10) {
-    console.log(`\n   ✅ CI is tight. Results are reliable.`);
-  }
+  await Bun.write(outputFile, JSON.stringify(output, null, 2));
 }
 
 // ============================================================================

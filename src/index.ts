@@ -24,7 +24,7 @@ import { IndraError } from "./types.js";
 
 const server = new McpServer({
   name: "indra_db",
-  version: "0.1.21",
+  version: "0.1.24",
 });
 
 const client = new IndraClient();
@@ -386,7 +386,7 @@ Use this to orient yourself at the start of a session.`,
 async function main() {
   const transport = new StdioServerTransport();
   
-  console.error(`[indra_db_mcp] Starting server v0.1.21...`);
+  console.error(`[indra_db_mcp] Starting server v0.1.24...`);
   console.error(`[indra_db_mcp] Database path: ${client.getDatabasePath()}`);
   console.error(`[indra_db_mcp] API URL: ${client.getApiUrl()}`);
   if (client.isDevMode()) {
