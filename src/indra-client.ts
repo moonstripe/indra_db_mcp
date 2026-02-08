@@ -200,6 +200,8 @@ export class IndraClient {
   private config: Required<IndraClientConfig>;
   private binaryPath: string | null = null;
   private initialized = false;
+  /** Promise-based queue to serialize ALL CLI invocations and prevent concurrent file access */
+  private execQueue: Promise<void> = Promise.resolve();
 
   constructor(config: IndraClientConfig = {}) {
     this.config = {
@@ -243,7 +245,24 @@ export class IndraClient {
   // CLI Execution
   // --------------------------------------------------------------------------
 
+  /**
+   * Serialize all CLI invocations through a promise queue to prevent
+   * concurrent process access to the .indra file (cross-process corruption).
+   * See: https://github.com/moonstripe/indra_db_mcp/issues/2
+   */
   private async exec<T = unknown>(args: string[], skipInit = false): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      this.execQueue = this.execQueue.then(async () => {
+        try {
+          resolve(await this._execInternal<T>(args, skipInit));
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+  }
+
+  private async _execInternal<T = unknown>(args: string[], skipInit = false): Promise<T> {
     // Resolve binary if not already done
     if (!this.binaryPath) {
       this.binaryPath = await resolveBinaryPath(this.config.binaryPath);

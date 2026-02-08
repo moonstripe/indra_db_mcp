@@ -166,6 +166,52 @@ describe("End-to-End: Real MCP Usage Patterns", () => {
   // Stress Tests
   // ==========================================================================
 
+  test("stress: concurrent writes should not corrupt database (issue #2)", async () => {
+    const client = new IndraClient({ databasePath: dbPath });
+    
+    // Fire off 7+ writes concurrently (the exact pattern that caused corruption)
+    const writes = Array.from({ length: 10 }, (_, i) =>
+      client.createThought(`Concurrent note ${i}: rapid fire save`, { id: `concurrent-${i}` })
+    );
+    
+    // All should succeed without corruption
+    const results = await Promise.all(writes);
+    expect(results.length).toBe(10);
+    
+    // Verify all notes persisted correctly
+    const newClient = new IndraClient({ databasePath: dbPath });
+    const all = await newClient.listThoughts();
+    expect(all.count).toBe(10);
+    
+    // Verify each one is readable
+    for (let i = 0; i < 10; i++) {
+      const thought = await newClient.getThought(`concurrent-${i}`);
+      expect(thought.content).toContain(`Concurrent note ${i}`);
+    }
+  });
+
+  test("stress: concurrent writes with interleaved reads (issue #2)", async () => {
+    const client = new IndraClient({ databasePath: dbPath });
+    
+    // Interleave writes and reads concurrently
+    const operations = [];
+    for (let i = 0; i < 5; i++) {
+      operations.push(client.createThought(`Interleaved ${i}`, { id: `interleaved-${i}` }));
+      operations.push(client.listThoughts());
+      operations.push(client.search("interleaved", 10));
+    }
+    
+    // None should throw corruption errors
+    const results = await Promise.allSettled(operations);
+    const failures = results.filter(r => r.status === 'rejected');
+    expect(failures.length).toBe(0);
+    
+    // Verify final state
+    const newClient = new IndraClient({ databasePath: dbPath });
+    const all = await newClient.listThoughts();
+    expect(all.count).toBe(5);
+  });
+
   test("stress: many notes across many sessions", async () => {
     const noteCount = 50;
     
