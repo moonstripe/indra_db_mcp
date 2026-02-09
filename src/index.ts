@@ -24,7 +24,7 @@ import { IndraError } from "./types.js";
 
 const server = new McpServer({
   name: "indra_db",
-  version: "0.1.24",
+  version: "0.1.25",
 });
 
 const client = new IndraClient();
@@ -357,6 +357,18 @@ Use this to orient yourself at the start of a session.`,
         // No remotes configured
       }
       
+      // Get branch info
+      let branchInfo: { current: string; count: number } = { current: status.branch, count: 1 };
+      try {
+        const branches = await client.listBranches();
+        branchInfo = {
+          current: branches.current,
+          count: branches.branches.length,
+        };
+      } catch {
+        // Branching info unavailable
+      }
+      
       // Check auth status
       const authStatus = hasAuth() 
         ? "authenticated (API key set)" 
@@ -365,7 +377,8 @@ Use this to orient yourself at the start of a session.`,
       return formatSuccess(
         { 
           database: status.database,
-          branch: status.branch,
+          branch: branchInfo.current,
+          branchCount: branchInfo.count,
           noteCount: thoughts.count,
           dirty: status.dirty,
           remote: remoteInfo,
@@ -380,13 +393,123 @@ Use this to orient yourself at the start of a session.`,
 );
 
 // ============================================================================
+// TOOL: indra_branch - Create or switch branches for parallel explorations
+// ============================================================================
+
+server.tool(
+  "indra_branch",
+  `Create parallel versions of memory for exploring different directions.
+
+Branches let you:
+- Explore "what if" scenarios without losing the original
+- Keep separate contexts (e.g., "work" vs "personal" projects)
+- Experiment with reorganizing notes safely
+
+Create a branch BEFORE making changes you might want to undo.
+Think of it like saving a game before a risky decision.
+
+Common patterns:
+- "experiment-feature-x" for trying new ideas
+- "backup-before-cleanup" before reorganizing
+- Context-specific names like "project-alpha" or "q1-planning"`,
+  {
+    action: z.enum(["create", "switch", "list"]).describe("What to do: create new branch, switch to existing, or list all"),
+    name: z.string().optional().describe("Branch name (required for create/switch)"),
+  },
+  async ({ action, name }) => {
+    try {
+      switch (action) {
+        case "create": {
+          if (!name) {
+            return formatError(new Error("Branch name required for 'create' action"));
+          }
+          const branch = await client.createBranch(name);
+          const syncResult = await tryPushSync();
+          return formatSuccess(
+            { name: branch.name, commit: branch.commit_hash, created: true },
+            `🌿 Created branch "${name}" - you're now on this branch`,
+            syncResult.warning
+          );
+        }
+        
+        case "switch": {
+          if (!name) {
+            return formatError(new Error("Branch name required for 'switch' action"));
+          }
+          await client.checkout(name);
+          // Pull to get latest from this branch
+          const syncResult = await tryPullSync();
+          const thoughts = await client.listThoughts();
+          return formatSuccess(
+            { branch: name, switched: true, noteCount: thoughts.count },
+            `🔀 Switched to branch "${name}" (${thoughts.count} notes)`,
+            syncResult.warning
+          );
+        }
+        
+        case "list": {
+          const result = await client.listBranches();
+          const branchList = result.branches.map(b => ({
+            name: b.name,
+            current: b.name === result.current,
+            commit: b.commit_hash.substring(0, 8),
+          }));
+          return formatSuccess(
+            { current: result.current, count: result.branches.length, branches: branchList },
+            `🌳 ${result.branches.length} branch(es), current: "${result.current}"`
+          );
+        }
+      }
+    } catch (error) {
+      return formatError(error);
+    }
+  }
+);
+
+// ============================================================================
+// TOOL: indra_history - View and navigate version history
+// ============================================================================
+
+server.tool(
+  "indra_history",
+  `See how the user's notes have evolved over time.
+
+Use this to:
+- Understand what changed and when
+- Find when a particular note was added/modified
+- Review the user's thinking patterns over time
+
+Each change is automatically saved with a timestamp.
+The history is preserved across branches.`,
+  {
+    limit: z.number().min(1).max(100).default(10).describe("Maximum commits to show"),
+  },
+  async ({ limit }) => {
+    try {
+      const result = await client.log(limit);
+      const commits = result.commits.map(c => ({
+        hash: c.hash.substring(0, 8),
+        message: c.message,
+        timestamp: c.timestamp,
+      }));
+      return formatSuccess(
+        { branch: result.branch, count: result.count, commits },
+        `📜 Recent history (${result.count} commits):`
+      );
+    } catch (error) {
+      return formatError(error);
+    }
+  }
+);
+
+// ============================================================================
 // Server Startup
 // ============================================================================
 
 async function main() {
   const transport = new StdioServerTransport();
   
-  console.error(`[indra_db_mcp] Starting server v0.1.24...`);
+  console.error(`[indra_db_mcp] Starting server v0.1.25...`);
   console.error(`[indra_db_mcp] Database path: ${client.getDatabasePath()}`);
   console.error(`[indra_db_mcp] API URL: ${client.getApiUrl()}`);
   if (client.isDevMode()) {
