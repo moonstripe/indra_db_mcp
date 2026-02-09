@@ -1,6 +1,6 @@
 {
   "name": "indra_db_mcp",
-  "version": "0.1.25",
+  "version": "0.1.26",
   "description": "MCP server for indra_db - a content-addressed graph database for versioned thoughts",
   "type": "module",
   "bin": {

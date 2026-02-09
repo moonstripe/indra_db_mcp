@@ -24,7 +24,7 @@ import { IndraError } from "./types.js";
 
 const server = new McpServer({
   name: "indra_db",
-  version: "0.1.25",
+  version: "0.1.26",
 });
 
 const client = new IndraClient();
@@ -503,13 +503,106 @@ The history is preserved across branches.`,
 );
 
 // ============================================================================
+// TOOL: indra_diff - Compare versions to see what changed
+// ============================================================================
+
+server.tool(
+  "indra_diff",
+  `Compare two points in history to see exactly what changed.
+
+Use this to:
+- Understand what was added, removed, or modified
+- Review changes between branches
+- Debug when something went wrong ("what did I change?")
+
+Helpful for understanding the impact of experiments before merging.`,
+  {
+    from: z.string().optional().describe("Starting commit hash or branch name (defaults to previous commit)"),
+    to: z.string().optional().describe("Ending commit hash or branch name (defaults to current HEAD)"),
+  },
+  async ({ from, to }) => {
+    try {
+      const result = await client.diff(from, to);
+      
+      const summary = {
+        added: result.added.length,
+        removed: result.removed.length,
+        modified: result.modified.length,
+        edges_added: result.edges_added.length,
+        edges_removed: result.edges_removed.length,
+      };
+      
+      return formatSuccess(
+        {
+          summary,
+          added: result.added.map(t => ({ id: t.id, content: t.content })),
+          removed: result.removed.map(t => ({ id: t.id, content: t.content })),
+          modified: result.modified.map(m => ({
+            id: m.after.id,
+            before: m.before.content,
+            after: m.after.content,
+          })),
+        },
+        `📊 Changes ${from ? `from ${from}` : "from previous commit"} ${to ? `to ${to}` : "to HEAD"}:`
+      );
+    } catch (error) {
+      return formatError(error);
+    }
+  }
+);
+
+// ============================================================================
+// TOOL: indra_experiment - Quick sandbox for trying ideas
+// ============================================================================
+
+server.tool(
+  "indra_experiment",
+  `Create a safe sandbox to try ideas without affecting the main timeline.
+
+This is a shortcut that:
+1. Creates a new branch with a descriptive name
+2. Switches to it automatically
+3. Returns a reminder of what branch you're on
+
+Perfect for:
+- "What if I reorganize these notes this way?"
+- "Let me try a different approach"
+- "I want to explore this tangent without losing my main thread"
+
+When done experimenting, use indra_branch to switch back to main.`,
+  {
+    name: z.string().describe("Descriptive name for this experiment (e.g., 'reorganize-projects', 'alternative-approach')"),
+  },
+  async ({ name }) => {
+    try {
+      // Create and checkout happens in one command
+      const branch = await client.createBranch(name);
+      const syncResult = await tryPushSync();
+      const thoughts = await client.listThoughts();
+      
+      return formatSuccess(
+        { 
+          branch: name, 
+          noteCount: thoughts.count,
+          reminder: `You're now in experiment "${name}". Changes here won't affect main.`,
+        },
+        `🧪 Created experiment branch "${name}" (${thoughts.count} notes)`,
+        syncResult.warning
+      );
+    } catch (error) {
+      return formatError(error);
+    }
+  }
+);
+
+// ============================================================================
 // Server Startup
 // ============================================================================
 
 async function main() {
   const transport = new StdioServerTransport();
   
-  console.error(`[indra_db_mcp] Starting server v0.1.25...`);
+  console.error(`[indra_db_mcp] Starting server v0.1.26...`);
   console.error(`[indra_db_mcp] Database path: ${client.getDatabasePath()}`);
   console.error(`[indra_db_mcp] API URL: ${client.getApiUrl()}`);
   if (client.isDevMode()) {
