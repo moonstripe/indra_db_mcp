@@ -101,51 +101,62 @@ When unset, creates a hidden `.indra` file in the current working directory.
 
 ## Available Tools
 
-### 🧠 Thought Capture
+### Core Tools (Always Start Here)
 
-| Tool | Description |
-|------|-------------|
-| `remember` | Capture a thought with optional ID. Embeddings auto-generated for semantic search. |
-| `recall` | Retrieve a specific thought by ID. |
-| `revise` | Update a thought while preserving history. |
-| `forget` | Remove from current state (preserved in history). |
-| `list_thoughts` | See all thoughts in the graph. |
+The MCP provides a minimal set of tools designed to be **agent-inviting** - each tool clearly explains *why* you'd use it before explaining *how*.
 
-### 🔗 Relationship Building
+#### 💾 Memory Management
 
-| Tool | Description |
-|------|-------------|
-| `connect` | Create typed relationship between thoughts. |
-| `disconnect` | Remove a relationship. |
-| `explore` | Traverse connections from a thought. |
+| Tool | Purpose |
+|------|---------|
+| `indra_remember` | Save information to improve future conversations. Automatically creates embeddings for semantic search. |
+| `indra_search` | Recall what you know about this user and topic. Searches by meaning, not just keywords. Use "*" to list all notes. |
+| `indra_status` | Check database status - current branch, note count, sync state. Use this to orient yourself. |
 
-**Built-in relationship types:**
-- `supports` — evidence/backing
-- `contradicts` — conflicts with
-- `derives_from` — evolved from
-- `part_of` — component of larger idea
-- `causes` — leads to
-- `precedes` — temporal ordering
-- `similar_to` — related concepts
-- `relates_to` — general connection
+#### 🌿 Branching & History
 
-### 🔮 Semantic Search
+| Tool | Purpose |
+|------|---------|
+| `indra_branch` | Create, switch, or list branches for parallel exploration. Actions: `create`, `switch`, `list`. |
+| `indra_experiment` | Quick sandbox - creates and switches to a new branch in one step. Perfect for "what if?" scenarios. |
+| `indra_history` | View how notes evolved over time. See commit history with timestamps. |
+| `indra_diff` | Compare two points in history to see exactly what changed (added/removed/modified). |
 
-| Tool | Description |
-|------|-------------|
-| `search` | Find thoughts by meaning using vector embeddings. |
+### Design Principles
 
-### 📜 Version Control
+Following the successful pattern of `indra_search` and `indra_remember`:
 
-| Tool | Description |
-|------|-------------|
-| `checkpoint` | Commit current state with a message. |
-| `history` | View commit log showing evolution. |
-| `branch` | Create new line of exploration. |
-| `switch_branch` | Move between branches. |
-| `list_branches` | See all branches. |
-| `compare` | Diff between states. |
-| `status` | Current database overview. |
+1. **Benefit-first descriptions** - Tools explain why they exist before how to use them
+2. **Minimal interface** - Each tool does one thing well
+3. **Auto-commit** - Mutations persist immediately (no explicit saves needed)
+4. **Auto-sync** - Pull before reads, push after writes (best-effort, never blocks)
+5. **Self-contained** - No tool requires calling another tool first
+
+### Example Workflows
+
+#### Exploring Alternative Approaches
+
+```javascript
+// Create a sandbox for experimentation
+indra_experiment({ name: "alternative-approach" })
+// Make changes...
+indra_remember({ content: "Trying a different strategy..." })
+// Compare with main timeline
+indra_diff({ from: "main" })
+// Switch back when done
+indra_branch({ action: "switch", name: "main" })
+```
+
+#### Reviewing History
+
+```javascript
+// See recent changes
+indra_history({ limit: 20 })
+// Compare two points
+indra_diff({ from: "abc123", to: "def456" })
+// Check current state
+indra_status()
+```
 
 ## Example Session
 
