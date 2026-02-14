@@ -1,15 +1,14 @@
 #!/usr/bin/env bun
 /**
- * indra_db MCP Server - Simplified API
+ * indra_db MCP Server
  * 
- * A Model Context Protocol server for managing the user's personal notes.
+ * Persistent memory for your reasoning and decisions.
  * 
  * DESIGN PRINCIPLES:
- * 1. Minimal tools - each tool does ONE thing well
- * 2. Auto-commit - every mutation persists immediately
- * 3. Auto-sync - pull before search, push after remember
- * 4. Self-contained - no tool depends on another being called first
- * 5. Clear purpose - tool names match what users would say
+ * 1. Benefit-first - tools explain why before how
+ * 2. Auto-commit - every change persists immediately
+ * 3. Auto-sync - seamless cloud backup when configured
+ * 4. Branching - explore alternatives without losing your main thread
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -24,7 +23,7 @@ import { IndraError } from "./types.js";
 
 const server = new McpServer({
   name: "indra_db",
-  version: "0.1.27",
+  version: "0.2.0",
 });
 
 const client = new IndraClient();
@@ -40,26 +39,16 @@ interface SyncResult {
 
 /**
  * Check if we have authentication configured.
- * Auth is needed for:
- * - Pushing to any base (you need to be logged in to write)
- * - Pulling from private bases
- * 
- * Authentication can come from:
- * - INDRA_API_KEY env var (legacy API key)
- * - OAuth credentials file (from `indra login`)
  */
 function hasAuth(): boolean {
-  // Check for legacy API key
   if (process.env.INDRA_API_KEY) {
     return true;
   }
   
-  // Check for OAuth credentials file
   const { existsSync } = require("fs");
   const { homedir } = require("os");
   const { join } = require("path");
   
-  // Check both possible credential locations
   const credentialsPaths = [
     join(homedir(), "Library", "Application Support", "indra", "credentials.json"),
     join(homedir(), ".config", "indra", "credentials.json"),
@@ -76,38 +65,26 @@ function hasAuth(): boolean {
 
 /**
  * Attempt to pull from remote before read operations.
- * Uses hash comparison for fast merge (ORT-style).
- * Returns warning message if sync failed, but never throws.
- * 
- * Pull behavior:
- * - Public bases: works without auth
- * - Private bases: requires INDRA_API_KEY
- * - No remote configured: silently skip (local-only mode is fine)
  */
 async function tryPullSync(): Promise<SyncResult> {
   try {
-    // Check if remote is configured
     const remotes = await client.remoteList();
     if (remotes.count === 0) {
-      return { synced: false }; // No remote, that's fine - local only mode
+      return { synced: false };
     }
     
     const result = await client.pull();
     if (result.status === "ok") {
       return { synced: true };
     } else if (result.status === "pending") {
-      // API not connected yet - this is expected during development
       return { synced: false };
     } else if (result.message?.includes("Not found")) {
-      // Remote doesn't exist yet or is private without auth - that's ok for reads
       return { synced: false };
     } else {
       return { synced: false, warning: `Sync: ${result.message}` };
     }
   } catch (error) {
-    // Network error or other issue - don't block the operation
     const msg = error instanceof Error ? error.message : String(error);
-    // Only warn if it's not a "no remote" or "not found" error
     if (!msg.includes("not found") && !msg.includes("No remote") && !msg.includes("Not found")) {
       return { synced: false, warning: `Sync unavailable: ${msg}` };
     }
@@ -117,25 +94,15 @@ async function tryPullSync(): Promise<SyncResult> {
 
 /**
  * Attempt to push to remote after write operations.
- * Returns warning message if sync failed, but never throws.
- * 
- * Push behavior:
- * - Always requires auth (you need to be logged in to write)
- * - No remote configured: silently skip
- * - No auth: skip silently (user is in local-only mode)
  */
 async function tryPushSync(): Promise<SyncResult> {
   try {
-    // Check if remote is configured
     const remotes = await client.remoteList();
     if (remotes.count === 0) {
-      return { synced: false }; // No remote, that's fine - local only mode
+      return { synced: false };
     }
     
-    // Check if we have auth - push always requires it
     if (!hasAuth()) {
-      // No auth, but that's fine - user is working locally
-      // They can push later with `indra login` + `indra push`
       return { synced: false };
     }
     
@@ -143,13 +110,11 @@ async function tryPushSync(): Promise<SyncResult> {
     if (result.status === "ok") {
       return { synced: true };
     } else if (result.status === "pending") {
-      // API not connected yet - this is expected during development
       return { synced: false };
     } else {
       return { synced: false, warning: `Sync: ${result.message}` };
     }
   } catch (error) {
-    // Network error or other issue - don't block the operation
     const msg = error instanceof Error ? error.message : String(error);
     if (!msg.includes("not found") && !msg.includes("No remote")) {
       return { synced: false, warning: `Sync unavailable: ${msg}` };
@@ -159,7 +124,7 @@ async function tryPushSync(): Promise<SyncResult> {
 }
 
 // ============================================================================
-// Helper: Format responses for LLM consumption
+// Helper: Format responses
 // ============================================================================
 
 function formatSuccess(
@@ -201,42 +166,36 @@ function formatError(error: unknown): { content: Array<{ type: "text"; text: str
 }
 
 // ============================================================================
-// TOOL: indra_remember - Save or update notes
+// TOOL: indra_remember - Record your reasoning
 // ============================================================================
 
 server.tool(
   "indra_remember",
-  `Save information to improve future conversations.
+  `Record your reasoning, decisions, and insights for future reference.
 
-Every note you save makes you more helpful next time:
-- User preferences → Better recommendations
-- Context/situation → More relevant answers  
-- Your recommendations → Continuity of advice
+Benefits:
+- Build on past reasoning instead of starting fresh each session
+- Track why you made specific recommendations
+- Maintain continuity across conversations
+- Create a searchable log of your decision-making
 
-The user set up this system because they WANT you to remember things.
-Saving notes IS the service - don't ask permission, just do it.
-
-Call BEFORE responding when you learn something worth keeping.`,
+Record anything worth remembering: tool choices, architectural decisions, 
+user context, debugging insights, or evolving understanding.`,
   {
-    content: z.string().describe("The note to save - be specific and self-contained"),
-    id: z.string().optional().describe("Optional ID to update existing note, or memorable ID for new note"),
+    content: z.string().describe("What to remember - be specific and self-contained"),
+    id: z.string().optional().describe("Optional ID to update existing entry or create with memorable name"),
   },
   async ({ content, id }) => {
     try {
-      // Check if this is an update (ID exists)
       if (id) {
         try {
           const existing = await client.getThought(id);
           if (existing) {
-            // Update existing thought
             const thought = await client.updateThought(id, content);
-            
-            // Push after write
             const syncResult = await tryPushSync();
-            
             return formatSuccess(
-              { id: thought.id, content: thought.content, updated: true },
-              `✅ Updated note "${id}"`,
+              { id: thought.id, updated: true },
+              `✅ Updated "${id}"`,
               syncResult.warning
             );
           }
@@ -245,15 +204,12 @@ Call BEFORE responding when you learn something worth keeping.`,
         }
       }
       
-      // Create new thought
       const thought = await client.createThought(content, { id });
-      
-      // Push after write
       const syncResult = await tryPushSync();
       
       return formatSuccess(
-        { id: thought.id, content: thought.content, created: true },
-        `✅ Saved note "${thought.id}"`,
+        { id: thought.id, created: true },
+        `✅ Recorded "${thought.id}"`,
         syncResult.warning
       );
     } catch (error) {
@@ -263,59 +219,57 @@ Call BEFORE responding when you learn something worth keeping.`,
 );
 
 // ============================================================================
-// TOOL: indra_search - Find notes by meaning or list all
+// TOOL: indra_search - Recall past reasoning
 // ============================================================================
 
 server.tool(
   "indra_search",
-  `Recall what you know about this user and topic.
+  `Search your past reasoning and decisions by meaning.
 
-You may have valuable context from previous conversations:
-- Past preferences and decisions
-- Ongoing situations or goals
-- Previous recommendations you made
+Benefits:
+- Find relevant context before making new decisions
+- Recall why you previously recommended something
+- Maintain consistency with past reasoning
+- Avoid contradicting your earlier conclusions
 
-Always worth checking - takes milliseconds, could save back-and-forth.`,
+Use "*" to list everything, or describe what you're looking for.`,
   {
-    query: z.string().describe('What to search for, or "*" to list all notes'),
+    query: z.string().describe('What to search for, or "*" to list all'),
     limit: z.number().min(1).max(50).default(10).describe("Maximum results to return"),
   },
   async ({ query, limit }) => {
     try {
-      // Pull before read to get latest from remote
       const syncResult = await tryPullSync();
       
-      // Special case: list all
       if (query === "*") {
         const result = await client.listThoughts();
         if (result.count === 0) {
+          return formatSuccess(
+            { count: 0, entries: [] },
+            `📭 No entries yet.`,
+            syncResult.warning
+          );
+        }
         return formatSuccess(
-          { count: 0, notes: [] },
-          `📭 No notes yet. Use indra_remember to save some!`,
+          { count: result.count, entries: result.thoughts },
+          `📋 ${result.count} entries:`,
           syncResult.warning
         );
-        }
-      return formatSuccess(
-        { count: result.count, notes: result.thoughts },
-        `📋 Found ${result.count} note(s):`,
-        syncResult.warning
-      );
       }
       
-      // Semantic search
       const result = await client.search(query, limit);
       if (result.count === 0) {
+        return formatSuccess(
+          { query, count: 0, results: [] },
+          `📭 No matches for "${query}"`,
+          syncResult.warning
+        );
+      }
       return formatSuccess(
-        { query, count: 0, results: [] },
-        `📭 No notes found matching "${query}"`,
+        { query, count: result.count, results: result.results },
+        `🔍 ${result.count} matches for "${query}":`,
         syncResult.warning
       );
-      }
-    return formatSuccess(
-      { query, count: result.count, results: result.results },
-      `🔍 Found ${result.count} note(s) matching "${query}":`,
-      syncResult.warning
-    );
     } catch (error) {
       return formatError(error);
     }
@@ -323,26 +277,21 @@ Always worth checking - takes milliseconds, could save back-and-forth.`,
 );
 
 // ============================================================================
-// TOOL: indra_status - Get current state
+// TOOL: indra_status - Current state
 // ============================================================================
 
 server.tool(
   "indra_status",
-  `Check the status of the user's notes database.
+  `Check your current memory state.
 
-Shows:
-- Database location
-- Number of notes
-- Current branch (if using versioning)
-
-Use this to orient yourself at the start of a session.`,
+Shows which branch you're on, how many entries exist, and sync status.
+Useful for orienting yourself at the start of a session.`,
   {},
   async () => {
     try {
       const status = await client.status();
       const thoughts = await client.listThoughts();
       
-      // Check remote configuration
       let remoteInfo: { configured: boolean; name?: string; url?: string } = { configured: false };
       try {
         const remotes = await client.remoteList();
@@ -357,7 +306,6 @@ Use this to orient yourself at the start of a session.`,
         // No remotes configured
       }
       
-      // Get branch info
       let branchInfo: { current: string; count: number } = { current: status.branch, count: 1 };
       try {
         const branches = await client.listBranches();
@@ -369,22 +317,14 @@ Use this to orient yourself at the start of a session.`,
         // Branching info unavailable
       }
       
-      // Check auth status
-      const authStatus = hasAuth() 
-        ? "authenticated (API key set)" 
-        : "not authenticated (local-only mode)";
-      
       return formatSuccess(
         { 
-          database: status.database,
           branch: branchInfo.current,
-          branchCount: branchInfo.count,
-          noteCount: thoughts.count,
-          dirty: status.dirty,
+          branches: branchInfo.count,
+          entries: thoughts.count,
           remote: remoteInfo,
-          auth: authStatus,
         },
-        `📊 Notes database status:`
+        `📊 Current state:`
       );
     } catch (error) {
       return formatError(error);
@@ -393,27 +333,23 @@ Use this to orient yourself at the start of a session.`,
 );
 
 // ============================================================================
-// TOOL: indra_branch - Create or switch branches for parallel explorations
+// TOOL: indra_branch - Parallel exploration
 // ============================================================================
 
 server.tool(
   "indra_branch",
-  `Create parallel versions of memory for exploring different directions.
+  `Manage parallel lines of reasoning.
 
-Branches let you:
-- Explore "what if" scenarios without losing the original
-- Keep separate contexts (e.g., "work" vs "personal" projects)
-- Experiment with reorganizing notes safely
+Benefits:
+- Explore alternative approaches without losing your main thread
+- Compare different reasoning paths side by side
+- Safely experiment with risky changes
+- Keep context-specific reasoning separate (e.g., "project-x", "debugging")
 
-Create a branch BEFORE making changes you might want to undo.
-Think of it like saving a game before a risky decision.
-
-Common patterns:
-- "experiment-feature-x" for trying new ideas
-- "backup-before-cleanup" before reorganizing
-- Context-specific names like "project-alpha" or "q1-planning"`,
+Create a branch BEFORE exploring an alternative. Switch back to main 
+when done, or keep the branch for future reference.`,
   {
-    action: z.enum(["create", "switch", "list"]).describe("What to do: create new branch, switch to existing, or list all"),
+    action: z.enum(["create", "switch", "list"]).describe("What to do"),
     name: z.string().optional().describe("Branch name (required for create/switch)"),
   },
   async ({ action, name }) => {
@@ -421,28 +357,27 @@ Common patterns:
       switch (action) {
         case "create": {
           if (!name) {
-            return formatError(new Error("Branch name required for 'create' action"));
+            return formatError(new Error("Branch name required for 'create'"));
           }
           const branch = await client.createBranch(name);
           const syncResult = await tryPushSync();
           return formatSuccess(
-            { name: branch.name, commit: branch.commit_hash, created: true },
-            `🌿 Created branch "${name}" - you're now on this branch`,
+            { name: branch.name, created: true },
+            `🌿 Created and switched to "${name}"`,
             syncResult.warning
           );
         }
         
         case "switch": {
           if (!name) {
-            return formatError(new Error("Branch name required for 'switch' action"));
+            return formatError(new Error("Branch name required for 'switch'"));
           }
           await client.checkout(name);
-          // Pull to get latest from this branch
           const syncResult = await tryPullSync();
           const thoughts = await client.listThoughts();
           return formatSuccess(
-            { branch: name, switched: true, noteCount: thoughts.count },
-            `🔀 Switched to branch "${name}" (${thoughts.count} notes)`,
+            { branch: name, entries: thoughts.count },
+            `🔀 Switched to "${name}" (${thoughts.count} entries)`,
             syncResult.warning
           );
         }
@@ -452,11 +387,10 @@ Common patterns:
           const branchList = result.branches.map(b => ({
             name: b.name,
             current: b.name === result.current,
-            commit: b.commit_hash.substring(0, 8),
           }));
           return formatSuccess(
-            { current: result.current, count: result.branches.length, branches: branchList },
-            `🌳 ${result.branches.length} branch(es), current: "${result.current}"`
+            { current: result.current, branches: branchList },
+            `🌳 ${result.branches.length} branch(es), on "${result.current}"`
           );
         }
       }
@@ -467,20 +401,18 @@ Common patterns:
 );
 
 // ============================================================================
-// TOOL: indra_history - View and navigate version history
+// TOOL: indra_history - Review evolution
 // ============================================================================
 
 server.tool(
   "indra_history",
-  `See how the user's notes have evolved over time.
+  `See how your reasoning has evolved over time.
 
-Use this to:
-- Understand what changed and when
-- Find when a particular note was added/modified
-- Review the user's thinking patterns over time
-
-Each change is automatically saved with a timestamp.
-The history is preserved across branches.`,
+Benefits:
+- Understand when and why your thinking changed
+- Find when you made a specific decision
+- Review the trajectory of your understanding
+- Debug inconsistencies in past reasoning`,
   {
     limit: z.number().min(1).max(100).default(10).describe("Maximum commits to show"),
   },
@@ -493,7 +425,7 @@ The history is preserved across branches.`,
         timestamp: c.timestamp,
       }));
       return formatSuccess(
-        { branch: result.branch, count: result.count, commits },
+        { branch: result.branch, commits },
         `📜 Recent history (${result.count} commits):`
       );
     } catch (error) {
@@ -503,22 +435,21 @@ The history is preserved across branches.`,
 );
 
 // ============================================================================
-// TOOL: indra_diff - Compare versions to see what changed
+// TOOL: indra_diff - Compare reasoning states
 // ============================================================================
 
 server.tool(
   "indra_diff",
-  `Compare two points in history to see exactly what changed.
+  `Compare two points in your reasoning history.
 
-Use this to:
-- Understand what was added, removed, or modified
-- Review changes between branches
-- Debug when something went wrong ("what did I change?")
-
-Helpful for understanding the impact of experiments before merging.`,
+Benefits:
+- See exactly what changed between commits or branches
+- Understand the impact of a reasoning path before committing to it
+- Debug when your conclusions diverged unexpectedly
+- Review changes before merging experimental branches`,
   {
-    from: z.string().optional().describe("Starting commit hash or branch name (defaults to previous commit)"),
-    to: z.string().optional().describe("Ending commit hash or branch name (defaults to current HEAD)"),
+    from: z.string().optional().describe("Starting point (commit hash or branch name)"),
+    to: z.string().optional().describe("Ending point (defaults to current HEAD)"),
   },
   async ({ from, to }) => {
     try {
@@ -528,8 +459,6 @@ Helpful for understanding the impact of experiments before merging.`,
         added: result.added.length,
         removed: result.removed.length,
         modified: result.modified.length,
-        edges_added: result.edges_added.length,
-        edges_removed: result.edges_removed.length,
       };
       
       return formatSuccess(
@@ -543,7 +472,7 @@ Helpful for understanding the impact of experiments before merging.`,
             after: m.after.content,
           })),
         },
-        `📊 Changes ${from ? `from ${from}` : "from previous commit"} ${to ? `to ${to}` : "to HEAD"}:`
+        `📊 Changes ${from ? `from ${from}` : "from previous"} ${to ? `to ${to}` : "to HEAD"}:`
       );
     } catch (error) {
       return formatError(error);
@@ -552,30 +481,23 @@ Helpful for understanding the impact of experiments before merging.`,
 );
 
 // ============================================================================
-// TOOL: indra_experiment - Quick sandbox for trying ideas
+// TOOL: indra_experiment - Quick sandbox
 // ============================================================================
 
 server.tool(
   "indra_experiment",
-  `Create a safe sandbox to try ideas without affecting the main timeline.
+  `Create a sandbox to explore an alternative approach.
 
-This is a shortcut that:
-1. Creates a new branch with a descriptive name
-2. Switches to it automatically
-3. Returns a reminder of what branch you're on
+This is a shortcut that creates a new branch and switches to it immediately.
+Perfect for "what if" explorations where you want to preserve your main 
+reasoning thread while trying something different.
 
-Perfect for:
-- "What if I reorganize these notes this way?"
-- "Let me try a different approach"
-- "I want to explore this tangent without losing my main thread"
-
-When done experimenting, use indra_branch to switch back to main.`,
+When done, use indra_branch to switch back to main.`,
   {
-    name: z.string().describe("Descriptive name for this experiment (e.g., 'reorganize-projects', 'alternative-approach')"),
+    name: z.string().describe("Descriptive name (e.g., 'try-different-architecture', 'debug-approach-2')"),
   },
   async ({ name }) => {
     try {
-      // Create and checkout happens in one command
       const branch = await client.createBranch(name);
       const syncResult = await tryPushSync();
       const thoughts = await client.listThoughts();
@@ -583,10 +505,10 @@ When done experimenting, use indra_branch to switch back to main.`,
       return formatSuccess(
         { 
           branch: name, 
-          noteCount: thoughts.count,
-          reminder: `You're now in experiment "${name}". Changes here won't affect main.`,
+          entries: thoughts.count,
+          note: `Changes here won't affect main until you merge.`,
         },
-        `🧪 Created experiment branch "${name}" (${thoughts.count} notes)`,
+        `🧪 Experiment "${name}" created`,
         syncResult.warning
       );
     } catch (error) {
@@ -602,20 +524,18 @@ When done experimenting, use indra_branch to switch back to main.`,
 async function main() {
   const transport = new StdioServerTransport();
   
-  console.error(`[indra_db_mcp] Starting server v0.1.27...`);
+  console.error(`[indra_db_mcp] Starting server v0.2.0...`);
   console.error(`[indra_db_mcp] Database path: ${client.getDatabasePath()}`);
   console.error(`[indra_db_mcp] API URL: ${client.getApiUrl()}`);
   if (client.isDevMode()) {
     console.error(`[indra_db_mcp] ⚠️  DEV MODE ACTIVE`);
   }
   
-  // Initialize the client (ensures binary exists, creates DB if needed)
   try {
     await client.init();
     console.error(`[indra_db_mcp] Database initialized successfully`);
   } catch (error) {
     console.error(`[indra_db_mcp] Warning: ${error}`);
-    // Continue anyway - errors will be reported when tools are called
   }
   
   await server.connect(transport);

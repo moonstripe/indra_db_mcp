@@ -1,33 +1,51 @@
 # indra_db_mcp
 
-> **Think out loud. Remember what matters. Watch understanding evolve.**
+> **Persistent memory for AI reasoning and decisions.**
 
-An MCP (Model Context Protocol) server that gives AI models a place to externalize their thinking. Built on [indra_db](https://github.com/moonstripe/indra_db) — a content-addressed graph database for versioned thoughts.
+An MCP server that gives AI agents memory that persists across sessions. Built on [indra_db](https://github.com/moonstripe/indra_db) — a git-like database for versioned thoughts.
 
-## Why This Exists
+## The Problem
 
-Most AI interactions are ephemeral. Insights evaporate. Reasoning chains vanish. Good ideas get rediscovered instead of built upon.
+AI agents start fresh every session. Yesterday's insights evaporate. Decisions get re-made. Reasoning chains vanish.
 
-**indra_db_mcp** changes that by giving models (and humans) a shared space to:
+**indra_db_mcp** changes that by giving agents:
 
-- 🧠 **Capture thoughts** as they emerge during reasoning
-- 🔗 **Connect ideas** into a web of understanding  
-- 🔮 **Search by meaning** not just keywords
-- 🌿 **Branch and explore** alternative lines of thinking
-- 📜 **Track evolution** of understanding over time
-
-It's git for thoughts. Version-controlled thinking. A knowledge graph that grows with every conversation.
+- 🧠 **Persistent memory** — Record reasoning that survives session boundaries
+- 🔍 **Semantic search** — Find past decisions by meaning, not keywords
+- 🌿 **Branching** — Explore alternatives without losing the main thread
+- 📜 **History** — See how understanding evolved over time
 
 ## Quick Start
 
-### Prerequisites
+### Install
 
-- [Bun](https://bun.sh/) runtime (v1.0+)
-- [Rust/Cargo](https://rustup.rs/) (for auto-installing indra_db CLI)
+```bash
+# Requires Bun (https://bun.sh)
+bun add -g indra_db_mcp
+```
 
-### Usage with MCP Clients
+### Configure Your Agent
 
-The simplest way to use this server is via `bunx`:
+**Claude Code** — Add to your project's `CLAUDE.md`:
+
+```markdown
+@import node_modules/indra_db_mcp/INDRA_INSTRUCTIONS.md
+```
+
+**Claude Desktop** — Add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "indra": {
+      "command": "bunx",
+      "args": ["-y", "indra_db_mcp"]
+    }
+  }
+}
+```
+
+**OpenCode** — Add to `opencode.json`:
 
 ```json
 {
@@ -36,166 +54,97 @@ The simplest way to use this server is via `bunx`:
       "command": ["bunx", "-y", "indra_db_mcp"],
       "type": "local"
     }
-  }
-}
-```
-
-### Enabling Proactive Use
-
-Models won't automatically use Indra unless instructed. Add the bundled instructions file to your config:
-
-**OpenCode** (`~/.config/opencode/opencode.json` or project `opencode.json`):
-```json
-{
+  },
   "instructions": ["node_modules/indra_db_mcp/INDRA_INSTRUCTIONS.md"]
 }
 ```
 
-**Claude Code** (project `CLAUDE.md` or global `~/.claude/CLAUDE.md`):
-```markdown
-<!-- Include Indra instructions -->
-@import node_modules/indra_db_mcp/INDRA_INSTRUCTIONS.md
-```
-
-Or copy `INDRA_INSTRUCTIONS.md` to your project and reference it directly.
-
-Or with a custom database path:
+**Generic MCP Client:**
 
 ```json
 {
   "mcpServers": {
     "indra": {
-      "command": ["bunx", "-y", "indra_db_mcp"],
-      "environment": {
-        "INDRA_DB_PATH": "~/.indra"
-      },
-      "type": "local"
+      "command": "bunx",
+      "args": ["-y", "indra_db_mcp"],
+      "env": {
+        "INDRA_DB_PATH": "./.indra"
+      }
     }
   }
 }
 ```
 
-### Manual Installation
+## Tools
 
-```bash
-# Install globally
-bun add -g indra_db_mcp
+| Tool | Purpose |
+|------|---------|
+| `indra_remember` | Record reasoning, decisions, and insights |
+| `indra_search` | Find past reasoning by meaning (or `"*"` for all) |
+| `indra_status` | Check current branch and entry count |
+| `indra_branch` | Create, switch, or list branches |
+| `indra_experiment` | Quick sandbox for exploring alternatives |
+| `indra_history` | See how reasoning evolved |
+| `indra_diff` | Compare two points in history |
 
-# Or clone and run locally
-git clone https://github.com/moonstripe/indra_db_mcp
-cd indra_db_mcp
-bun install
-bun start
+## Example Usage
 
-# The indra CLI will auto-install on first run via cargo
+An agent might use Indra like this:
+
+```
+User: Should I use PostgreSQL or MongoDB for my e-commerce app?
+
+Agent thinking:
+  → indra_search({ query: "database recommendations" })
+  → Found: Previously recommended PostgreSQL for relational data with transactions
+  
+  → Making recommendation based on past reasoning + current context
+  
+  → indra_remember({ 
+      content: "Recommended PostgreSQL for e-commerce app. User has relational product 
+               catalog, needs transactions for orders. Consistent with past guidance.",
+      id: "ecommerce-db-decision"
+    })
 ```
 
-### Environment Variables
+Later:
+
+```
+User: Why did you recommend PostgreSQL?
+
+Agent:
+  → indra_search({ query: "ecommerce database" })
+  → Found the reasoning from the previous session
+  → Can explain the decision with full context
+```
+
+### Branching for Exploration
+
+```
+Agent: Let me explore an alternative approach...
+
+  → indra_experiment({ name: "try-nosql-approach" })
+  
+  [Explores MongoDB path, records reasoning]
+  
+  → indra_diff({ from: "main" })  // Compare with main reasoning
+  
+  → indra_branch({ action: "switch", name: "main" })  // Back to main
+```
+
+## Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `INDRA_DB_PATH` | Path to database file | `./.indra` (hidden file) |
+| `INDRA_DB_PATH` | Path to database file | `./.indra` |
+| `INDRA_API_URL` | API for sync (optional) | `https://api.indradb.net` |
 
-When `INDRA_DB_PATH` is set, uses that path (supports `~` for home directory).
-When unset, creates a hidden `.indra` file in the current working directory.
+## How It Works
 
-## Available Tools
-
-### Core Tools (Always Start Here)
-
-The MCP provides a minimal set of tools designed to be **agent-inviting** - each tool clearly explains *why* you'd use it before explaining *how*.
-
-#### 💾 Memory Management
-
-| Tool | Purpose |
-|------|---------|
-| `indra_remember` | Save information to improve future conversations. Automatically creates embeddings for semantic search. |
-| `indra_search` | Recall what you know about this user and topic. Searches by meaning, not just keywords. Use "*" to list all notes. |
-| `indra_status` | Check database status - current branch, note count, sync state. Use this to orient yourself. |
-
-#### 🌿 Branching & History
-
-| Tool | Purpose |
-|------|---------|
-| `indra_branch` | Create, switch, or list branches for parallel exploration. Actions: `create`, `switch`, `list`. |
-| `indra_experiment` | Quick sandbox - creates and switches to a new branch in one step. Perfect for "what if?" scenarios. |
-| `indra_history` | View how notes evolved over time. See commit history with timestamps. |
-| `indra_diff` | Compare two points in history to see exactly what changed (added/removed/modified). |
-
-### Design Principles
-
-Following the successful pattern of `indra_search` and `indra_remember`:
-
-1. **Benefit-first descriptions** - Tools explain why they exist before how to use them
-2. **Minimal interface** - Each tool does one thing well
-3. **Auto-commit** - Mutations persist immediately (no explicit saves needed)
-4. **Auto-sync** - Pull before reads, push after writes (best-effort, never blocks)
-5. **Self-contained** - No tool requires calling another tool first
-
-### Example Workflows
-
-#### Exploring Alternative Approaches
-
-```javascript
-// Create a sandbox for experimentation
-indra_experiment({ name: "alternative-approach" })
-// Make changes...
-indra_remember({ content: "Trying a different strategy..." })
-// Compare with main timeline
-indra_diff({ from: "main" })
-// Switch back when done
-indra_branch({ action: "switch", name: "main" })
-```
-
-#### Reviewing History
-
-```javascript
-// See recent changes
-indra_history({ limit: 20 })
-// Compare two points
-indra_diff({ from: "abc123", to: "def456" })
-// Check current state
-indra_status()
-```
-
-## Example Session
-
-Here's how an AI might use this during reasoning:
-
-```
-User: Help me think through whether to use microservices or a monolith for my startup.
-
-AI: Let me capture my initial thoughts on this decision...
-
-[Uses remember] "The microservices vs monolith decision depends heavily on team size, 
-expected scale, and operational maturity"
-
-[Uses remember] "Startups typically benefit from monoliths initially - faster iteration, 
-simpler deployment, easier debugging"
-
-[Uses remember] "Microservices add operational overhead: service discovery, distributed 
-tracing, network latency, deployment complexity"
-
-[Uses connect] "monolith-benefits" --[supports]--> "startup-recommendation"
-[Uses connect] "microservices-overhead" --[contradicts]--> "premature-microservices"
-
-[Uses checkpoint] "Initial analysis of architecture decision"
-
-Let me explore an alternative perspective...
-
-[Uses branch] "microservices-case"
-[Uses switch_branch] "microservices-case"
-
-[Uses remember] "If expecting rapid team growth, microservices enable independent 
-team ownership and deployment"
-
-[Uses search] "team scaling" 
-// Finds related thoughts about team dynamics
-
-[Uses switch_branch] "main"
-[Uses compare] "main" vs "microservices-case"
-// Shows what each branch explored
-```
+1. **Content-addressed storage** — Every entry is hashed. Identity comes from content.
+2. **Local embeddings** — Uses `sentence-transformers/all-MiniLM-L6-v2` for semantic search.
+3. **Git-like versioning** — Commits create snapshots. Branches enable parallel exploration.
+4. **Single file** — Everything in one `.indra` file. Easy to backup and share.
 
 ## Architecture
 
@@ -207,7 +156,7 @@ team ownership and deployment"
 ┌─────────────────────────▼───────────────────────────────┐
 │                   indra_db_mcp (Bun)                     │
 │  ┌─────────────┐  ┌──────────────┐  ┌───────────────┐  │
-│  │   MCP SDK   │  │ IndraClient  │  │  Type Safety  │  │
+│  │   MCP SDK   │  │ IndraClient  │  │ Auto-sync     │  │
 │  └─────────────┘  └──────┬───────┘  └───────────────┘  │
 └──────────────────────────┼──────────────────────────────┘
                            │ CLI subprocess (JSON)
@@ -217,49 +166,17 @@ team ownership and deployment"
 │  │ Graph Store │  │  Embeddings  │  │  Git-like VCS │  │
 │  └─────────────┘  └──────────────┘  └───────────────┘  │
 └─────────────────────────────────────────────────────────┘
-                           │
-┌──────────────────────────▼──────────────────────────────┐
-│              thoughts.indra (Single File)                │
-│  Content-addressed objects, BLAKE3 hashes, zstd compressed│
-└─────────────────────────────────────────────────────────┘
 ```
 
-## Development
+## Visualize on IndraDB
+
+Push to [IndraDB](https://indradb.net) for 3D visualization and analytics:
 
 ```bash
-# Run with watch mode
-bun run dev
-
-# Type check
-bun run typecheck
-
-# Run tests
-bun test
+indra login
+indra remote add origin username/my-memory
+indra push origin
 ```
-
-## How It Works
-
-1. **Content Addressing**: Every thought is hashed (BLAKE3). Identity comes from content.
-
-2. **Embeddings**: Using `sentence-transformers/all-MiniLM-L6-v2` locally via HuggingFace. 
-   Thoughts are embedded on creation for semantic search.
-
-3. **Graph Structure**: Thoughts are nodes, relationships are typed/weighted edges.
-   Edges "float" to latest node versions.
-
-4. **Version Control**: Git-like commits create snapshots. Branches enable parallel exploration.
-   Full history preserved — nothing truly deleted.
-
-5. **Single File**: Everything stored in one `.indra` file. Easy to backup, share, version.
-
-## Philosophical Note
-
-This project is named after [Indra's Net](https://en.wikipedia.org/wiki/Indra%27s_net) — 
-a Buddhist metaphor where reality is a vast net of jewels, each reflecting all others.
-
-Your thoughts are like those jewels. Each one reflects and connects to others. 
-The web of connections *is* your understanding. This tool makes that web visible, 
-versionable, and searchable.
 
 ## License
 
@@ -268,5 +185,5 @@ MIT
 ## Related
 
 - [indra_db](https://github.com/moonstripe/indra_db) — The underlying Rust database
+- [IndraDB](https://indradb.net) — Web platform for visualization
 - [MCP Specification](https://modelcontextprotocol.io/) — Model Context Protocol docs
-- [indranet](https://github.com/moonstripe/indranet) — Online viewing tool (coming soon)
