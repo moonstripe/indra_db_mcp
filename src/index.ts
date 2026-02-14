@@ -24,7 +24,7 @@ import { IndraError } from "./types.js";
 
 const server = new McpServer({
   name: "indra_db",
-  version: "0.1.26",
+  version: "0.1.27",
 });
 
 const client = new IndraClient();
@@ -602,7 +602,7 @@ When done experimenting, use indra_branch to switch back to main.`,
 async function main() {
   const transport = new StdioServerTransport();
   
-  console.error(`[indra_db_mcp] Starting server v0.1.26...`);
+  console.error(`[indra_db_mcp] Starting server v0.1.27...`);
   console.error(`[indra_db_mcp] Database path: ${client.getDatabasePath()}`);
   console.error(`[indra_db_mcp] API URL: ${client.getApiUrl()}`);
   if (client.isDevMode()) {
