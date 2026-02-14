@@ -537,14 +537,12 @@ export class IndraClient {
   /**
    * Push to a remote repository.
    * Note: Requires IndraNet API connection to actually transfer data.
+   * Visualization is computed server-side by IndraNet, not by the CLI.
    */
-  async push(remote: string = "origin", force: boolean = false, viz: boolean = true): Promise<PushResponse> {
+  async push(remote: string = "origin", force: boolean = false): Promise<PushResponse> {
     const args = ["push", remote];
     if (force) {
       args.push("--force");
-    }
-    if (viz) {
-      args.push("--viz");
     }
     return this.exec<PushResponse>(args);
   }
