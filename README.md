@@ -19,8 +19,14 @@ AI agents start fresh every session. Yesterday's insights evaporate. Decisions g
 
 ### Install
 
+No installation required — use `bunx` for automatic updates:
+
 ```bash
-# Requires Bun (https://bun.sh)
+bunx -y indra_db_mcp@latest
+```
+
+Or install globally:
+```bash
 bun add -g indra_db_mcp
 ```
 
@@ -39,24 +45,31 @@ bun add -g indra_db_mcp
   "mcpServers": {
     "indra": {
       "command": "bunx",
-      "args": ["-y", "indra_db_mcp"]
+      "args": ["-y", "indra_db_mcp@latest"]
     }
   }
 }
 ```
 
-**OpenCode** — Add to `opencode.json`:
+**OpenCode** — Add to `~/.config/opencode/opencode.json`:
 
 ```json
 {
-  "mcpServers": {
+  "mcp": {
     "indra": {
-      "command": ["bunx", "-y", "indra_db_mcp"],
+      "command": ["bunx", "-y", "indra_db_mcp@latest"],
       "type": "local"
     }
   },
-  "instructions": ["node_modules/indra_db_mcp/INDRA_INSTRUCTIONS.md"]
+  "instructions": ["~/.config/opencode/instructions/indra.md"]
 }
+```
+
+Then copy INDRA_INSTRUCTIONS.md:
+```bash
+mkdir -p ~/.config/opencode/instructions
+curl -o ~/.config/opencode/instructions/indra.md \
+  https://raw.githubusercontent.com/moonstripe/indra_db_mcp/main/INDRA_INSTRUCTIONS.md
 ```
 
 **Generic MCP Client:**
@@ -66,7 +79,7 @@ bun add -g indra_db_mcp
   "mcpServers": {
     "indra": {
       "command": "bunx",
-      "args": ["-y", "indra_db_mcp"],
+      "args": ["-y", "indra_db_mcp@latest"],
       "env": {
         "INDRA_DB_PATH": "./.indra"
       }
