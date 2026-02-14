@@ -1,81 +1,85 @@
 # Indra Memory System
 
-You have access to persistent memory through the Indra tools. This memory persists across sessions and helps you maintain consistency in your reasoning.
+You have access to persistent memory that tracks your reasoning process across sessions.
 
-## When to Use Memory
+## Core Concept
 
-**Record your reasoning when you:**
-- Make a recommendation or decision worth remembering
-- Learn something about the user's preferences or context
-- Choose a specific approach or tool for a task
-- Discover something through debugging or exploration
-- Form an opinion based on analysis
+Indra is NOT for storing user preferences or facts. It's for documenting **your reasoning**:
+- WHY you chose an approach
+- HOW your understanding evolved
+- WHAT shifted when you changed your recommendation
 
-**Search your memory when you:**
-- Need to make a decision in a domain you've worked on before
-- Want to check if you've already reasoned about something
-- Need to maintain consistency with past recommendations
-- Are starting a new session and want context
+## When to Use
 
-## Tools Available
+### `indra_remember` — Document your reasoning
 
-### `indra_remember`
-Record reasoning, decisions, and insights. Be specific and self-contained—future you should understand this without context.
+**CALL THIS WHEN you:**
+- Choose an approach and want to record WHY
+- Change your recommendation (capture what shifted your thinking)
+- Reach a conclusion worth preserving
+- Make a decision after weighing trade-offs
 
+**Example:**
 ```
 indra_remember({
-  content: "Recommended PostgreSQL over MongoDB for this project because the data is highly relational and they need ACID transactions.",
-  id: "db-recommendation"  // optional, for updating later
+  content: "Recommended monolith over microservices. Key factors: team size (3 engineers), timeline (2 month MVP), no proven scale requirements yet. Microservices would add operational complexity without clear benefit at this stage.",
+  id: "arch-decision"
 })
 ```
 
-### `indra_search`
-Find past reasoning by meaning. Use `"*"` to list everything.
+### `indra_search` — Check your past reasoning
 
+**CALL THIS WHEN you:**
+- Are about to make a recommendation (check for prior reasoning)
+- Want consistency with earlier conclusions
+- Need to recall the journey, not just the destination
+
+**Example:**
 ```
-indra_search({ query: "database recommendations" })
-indra_search({ query: "*" })  // list all entries
-```
-
-### `indra_branch` / `indra_experiment`
-Explore alternative approaches without affecting your main reasoning thread.
-
-```
-// Before trying something risky or experimental
-indra_experiment({ name: "try-microservices-approach" })
-
-// ... explore ...
-
-// Switch back when done
-indra_branch({ action: "switch", name: "main" })
+indra_search({ query: "architecture decisions" })
 ```
 
-### `indra_diff`
-Compare branches or points in history to see what changed.
+### `indra_experiment` — Explore alternatives
+
+**CALL THIS WHEN you:**
+- Want to think through a different approach
+- Are comparing two solutions
+- Need to reason divergently without losing your main thread
+
+**Example:**
+```
+indra_experiment({ name: "explore-graphql" })
+// ... reason through GraphQL approach ...
+indra_branch({ action: "switch", name: "main" })  // back to main
+```
+
+### `indra_diff` — Compare reasoning paths
+
+**CALL THIS WHEN you:**
+- Want to see how two branches differ
+- Need to summarize what changed
+- Are deciding whether to merge an exploration
+
+## What to Record
+
+✅ **Good entries** (capture reasoning):
+- "Chose PostgreSQL because the data model is heavily relational and they need ACID for transactions"
+- "Shifted from REST to GraphQL after learning they have many different clients with varying data needs"
+- "Explored microservices but concluded the operational overhead isn't justified for a 3-person team"
+
+❌ **Bad entries** (just facts):
+- "User wants to build an e-commerce app"
+- "User prefers TypeScript"
+- "The API uses REST"
+
+## Branching
+
+Branches let you explore without losing your main thread:
 
 ```
-indra_diff({ from: "main", to: "experiment-branch" })
+main: "Recommended REST API because..."
+  └── explore-graphql: "What if GraphQL? Pros: flexible queries..."
+  └── explore-grpc: "What if gRPC? Pros: performance..."
 ```
 
-## Best Practices
-
-1. **Be proactive** — Record insights as you form them, not just when asked
-2. **Be specific** — Include the "why" not just the "what"
-3. **Use branches** — Experiment freely without losing your main thread
-4. **Search first** — Check for relevant context before making decisions
-5. **Update entries** — Use the same ID to refine understanding over time
-
-## Example Session Flow
-
-```
-Session Start:
-  → indra_search({ query: "*" }) to see what you know
-  → indra_search({ query: "user preferences" }) for relevant context
-
-During Work:
-  → indra_remember when you make decisions or learn things
-  → indra_experiment when exploring alternatives
-
-Session End:
-  → Memory automatically persists, no action needed
-```
+Create branches freely. They're cheap.

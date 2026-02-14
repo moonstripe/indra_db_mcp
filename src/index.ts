@@ -2,13 +2,9 @@
 /**
  * indra_db MCP Server
  * 
- * Persistent memory for your reasoning and decisions.
- * 
- * DESIGN PRINCIPLES:
- * 1. Benefit-first - tools explain why before how
- * 2. Auto-commit - every change persists immediately
- * 3. Auto-sync - seamless cloud backup when configured
- * 4. Branching - explore alternatives without losing your main thread
+ * Persistent memory for your reasoning process.
+ * Track how your understanding evolves, why you made decisions,
+ * and explore alternative approaches through branching.
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -23,7 +19,7 @@ import { IndraError } from "./types.js";
 
 const server = new McpServer({
   name: "indra_db",
-  version: "0.2.0",
+  version: "0.2.1",
 });
 
 const client = new IndraClient();
@@ -37,9 +33,6 @@ interface SyncResult {
   warning?: string;
 }
 
-/**
- * Check if we have authentication configured.
- */
 function hasAuth(): boolean {
   if (process.env.INDRA_API_KEY) {
     return true;
@@ -63,9 +56,6 @@ function hasAuth(): boolean {
   return false;
 }
 
-/**
- * Attempt to pull from remote before read operations.
- */
 async function tryPullSync(): Promise<SyncResult> {
   try {
     const remotes = await client.remoteList();
@@ -92,9 +82,6 @@ async function tryPullSync(): Promise<SyncResult> {
   }
 }
 
-/**
- * Attempt to push to remote after write operations.
- */
 async function tryPushSync(): Promise<SyncResult> {
   try {
     const remotes = await client.remoteList();
@@ -166,24 +153,23 @@ function formatError(error: unknown): { content: Array<{ type: "text"; text: str
 }
 
 // ============================================================================
-// TOOL: indra_remember - Record your reasoning
+// TOOL: indra_remember - Document your reasoning
 // ============================================================================
 
 server.tool(
   "indra_remember",
-  `Record your reasoning, decisions, and insights for future reference.
+  `Document your reasoning process.
 
-Benefits:
-- Build on past reasoning instead of starting fresh each session
-- Track why you made specific recommendations
-- Maintain continuity across conversations
-- Create a searchable log of your decision-making
+CALL THIS WHEN you:
+- Choose an approach and want to record WHY
+- Change your recommendation and want to capture WHAT SHIFTED
+- Reach a conclusion worth preserving
+- Want to trace HOW you arrived at a decision
 
-Record anything worth remembering: tool choices, architectural decisions, 
-user context, debugging insights, or evolving understanding.`,
+Record the reasoning, not just the facts. Future you needs the WHY.`,
   {
-    content: z.string().describe("What to remember - be specific and self-contained"),
-    id: z.string().optional().describe("Optional ID to update existing entry or create with memorable name"),
+    content: z.string().describe("Your reasoning - include the why, not just the what"),
+    id: z.string().optional().describe("Optional ID to update existing entry"),
   },
   async ({ content, id }) => {
     try {
@@ -219,23 +205,23 @@ user context, debugging insights, or evolving understanding.`,
 );
 
 // ============================================================================
-// TOOL: indra_search - Recall past reasoning
+// TOOL: indra_search - Review past reasoning
 // ============================================================================
 
 server.tool(
   "indra_search",
-  `Search your past reasoning and decisions by meaning.
+  `Review how you've reasoned about similar topics before.
 
-Benefits:
-- Find relevant context before making new decisions
-- Recall why you previously recommended something
-- Maintain consistency with past reasoning
-- Avoid contradicting your earlier conclusions
+CALL THIS WHEN you:
+- Are about to make a recommendation (check for prior reasoning)
+- Want to maintain consistency with earlier conclusions
+- Need to recall the journey, not just the destination
+- Are asked about previous discussions
 
-Use "*" to list everything, or describe what you're looking for.`,
+Your past reasoning is context. Use it.`,
   {
     query: z.string().describe('What to search for, or "*" to list all'),
-    limit: z.number().min(1).max(50).default(10).describe("Maximum results to return"),
+    limit: z.number().min(1).max(50).default(10).describe("Maximum results"),
   },
   async ({ query, limit }) => {
     try {
@@ -246,7 +232,7 @@ Use "*" to list everything, or describe what you're looking for.`,
         if (result.count === 0) {
           return formatSuccess(
             { count: 0, entries: [] },
-            `📭 No entries yet.`,
+            `📭 No reasoning recorded yet.`,
             syncResult.warning
           );
         }
@@ -261,13 +247,13 @@ Use "*" to list everything, or describe what you're looking for.`,
       if (result.count === 0) {
         return formatSuccess(
           { query, count: 0, results: [] },
-          `📭 No matches for "${query}"`,
+          `📭 No prior reasoning on "${query}"`,
           syncResult.warning
         );
       }
       return formatSuccess(
         { query, count: result.count, results: result.results },
-        `🔍 ${result.count} matches for "${query}":`,
+        `🔍 ${result.count} relevant entries:`,
         syncResult.warning
       );
     } catch (error) {
@@ -282,10 +268,7 @@ Use "*" to list everything, or describe what you're looking for.`,
 
 server.tool(
   "indra_status",
-  `Check your current memory state.
-
-Shows which branch you're on, how many entries exist, and sync status.
-Useful for orienting yourself at the start of a session.`,
+  `Check current memory state and branch.`,
   {},
   async () => {
     try {
@@ -333,21 +316,19 @@ Useful for orienting yourself at the start of a session.`,
 );
 
 // ============================================================================
-// TOOL: indra_branch - Parallel exploration
+// TOOL: indra_branch - Manage reasoning threads
 // ============================================================================
 
 server.tool(
   "indra_branch",
   `Manage parallel lines of reasoning.
 
-Benefits:
-- Explore alternative approaches without losing your main thread
-- Compare different reasoning paths side by side
-- Safely experiment with risky changes
-- Keep context-specific reasoning separate (e.g., "project-x", "debugging")
+CALL THIS WHEN you:
+- Want to explore an alternative without losing the current thread
+- Need to compare two different approaches
+- Are about to go down a path you might want to abandon
 
-Create a branch BEFORE exploring an alternative. Switch back to main 
-when done, or keep the branch for future reference.`,
+Branches are cheap. Create them freely.`,
   {
     action: z.enum(["create", "switch", "list"]).describe("What to do"),
     name: z.string().optional().describe("Branch name (required for create/switch)"),
@@ -401,18 +382,15 @@ when done, or keep the branch for future reference.`,
 );
 
 // ============================================================================
-// TOOL: indra_history - Review evolution
+// TOOL: indra_history - View reasoning evolution
 // ============================================================================
 
 server.tool(
   "indra_history",
-  `See how your reasoning has evolved over time.
+  `See how your reasoning has evolved.
 
-Benefits:
-- Understand when and why your thinking changed
-- Find when you made a specific decision
-- Review the trajectory of your understanding
-- Debug inconsistencies in past reasoning`,
+Shows the timeline of recorded thoughts — useful for understanding 
+how you arrived at current conclusions.`,
   {
     limit: z.number().min(1).max(100).default(10).describe("Maximum commits to show"),
   },
@@ -426,7 +404,7 @@ Benefits:
       }));
       return formatSuccess(
         { branch: result.branch, commits },
-        `📜 Recent history (${result.count} commits):`
+        `📜 Reasoning timeline:`
       );
     } catch (error) {
       return formatError(error);
@@ -435,21 +413,20 @@ Benefits:
 );
 
 // ============================================================================
-// TOOL: indra_diff - Compare reasoning states
+// TOOL: indra_diff - Compare reasoning paths
 // ============================================================================
 
 server.tool(
   "indra_diff",
-  `Compare two points in your reasoning history.
+  `Compare two points in your reasoning.
 
-Benefits:
-- See exactly what changed between commits or branches
-- Understand the impact of a reasoning path before committing to it
-- Debug when your conclusions diverged unexpectedly
-- Review changes before merging experimental branches`,
+CALL THIS WHEN you:
+- Want to see what changed between branches
+- Need to understand how your thinking evolved
+- Are deciding whether to merge an experimental branch`,
   {
-    from: z.string().optional().describe("Starting point (commit hash or branch name)"),
-    to: z.string().optional().describe("Ending point (defaults to current HEAD)"),
+    from: z.string().optional().describe("Starting point (commit or branch)"),
+    to: z.string().optional().describe("Ending point (defaults to HEAD)"),
   },
   async ({ from, to }) => {
     try {
@@ -472,7 +449,7 @@ Benefits:
             after: m.after.content,
           })),
         },
-        `📊 Changes ${from ? `from ${from}` : "from previous"} ${to ? `to ${to}` : "to HEAD"}:`
+        `📊 Reasoning diff:`
       );
     } catch (error) {
       return formatError(error);
@@ -481,20 +458,21 @@ Benefits:
 );
 
 // ============================================================================
-// TOOL: indra_experiment - Quick sandbox
+// TOOL: indra_experiment - Quick exploration branch
 // ============================================================================
 
 server.tool(
   "indra_experiment",
-  `Create a sandbox to explore an alternative approach.
+  `Start exploring an alternative approach.
 
-This is a shortcut that creates a new branch and switches to it immediately.
-Perfect for "what if" explorations where you want to preserve your main 
-reasoning thread while trying something different.
+Creates a branch and switches to it. Use when you want to:
+- Think through a different path
+- Try something you might abandon
+- Compare approaches without losing your main thread
 
-When done, use indra_branch to switch back to main.`,
+When done, switch back to main or merge your findings.`,
   {
-    name: z.string().describe("Descriptive name (e.g., 'try-different-architecture', 'debug-approach-2')"),
+    name: z.string().describe("Descriptive name for this exploration"),
   },
   async ({ name }) => {
     try {
@@ -506,9 +484,8 @@ When done, use indra_branch to switch back to main.`,
         { 
           branch: name, 
           entries: thoughts.count,
-          note: `Changes here won't affect main until you merge.`,
         },
-        `🧪 Experiment "${name}" created`,
+        `🧪 Exploring "${name}" — main thread preserved`,
         syncResult.warning
       );
     } catch (error) {
@@ -524,7 +501,7 @@ When done, use indra_branch to switch back to main.`,
 async function main() {
   const transport = new StdioServerTransport();
   
-  console.error(`[indra_db_mcp] Starting server v0.2.0...`);
+  console.error(`[indra_db_mcp] Starting server v0.2.1...`);
   console.error(`[indra_db_mcp] Database path: ${client.getDatabasePath()}`);
   console.error(`[indra_db_mcp] API URL: ${client.getApiUrl()}`);
   if (client.isDevMode()) {
