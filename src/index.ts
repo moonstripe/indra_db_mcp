@@ -19,7 +19,7 @@ import { IndraError } from "./types.js";
 
 const server = new McpServer({
   name: "indra_db",
-  version: "0.2.1",
+  version: "0.2.2",
 });
 
 const client = new IndraClient();
@@ -158,15 +158,24 @@ function formatError(error: unknown): { content: Array<{ type: "text"; text: str
 
 server.tool(
   "indra_remember",
-  `Document your reasoning process.
+  `Capture your reasoning — the WHY behind decisions.
+
+THIS IS YOUR PRIMARY TOOL. Use it liberally.
 
 CALL THIS WHEN you:
-- Choose an approach and want to record WHY
-- Change your recommendation and want to capture WHAT SHIFTED
-- Reach a conclusion worth preserving
-- Want to trace HOW you arrived at a decision
+- Make a recommendation (record WHY you chose this approach)
+- Change direction (capture WHAT SHIFTED your thinking)
+- Reach a conclusion (preserve the reasoning chain)
+- Learn something that changes how you'd approach similar problems
+- Complete a task (document what worked and why)
 
-Record the reasoning, not just the facts. Future you needs the WHY.`,
+WHAT TO RECORD:
+- "Chose X because A, B, C" — not just "using X"
+- "Shifted from X to Y because..." — capture the pivot
+- "Key insight: ..." — distill what you learned
+- "Trade-offs considered: ..." — show your reasoning
+
+This is how you build continuity. Your future self will thank you.`,
   {
     content: z.string().describe("Your reasoning - include the why, not just the what"),
     id: z.string().optional().describe("Optional ID to update existing entry"),
@@ -501,7 +510,7 @@ When done, switch back to main or merge your findings.`,
 async function main() {
   const transport = new StdioServerTransport();
   
-  console.error(`[indra_db_mcp] Starting server v0.2.1...`);
+  console.error(`[indra_db_mcp] Starting server v0.2.2...`);
   console.error(`[indra_db_mcp] Database path: ${client.getDatabasePath()}`);
   console.error(`[indra_db_mcp] API URL: ${client.getApiUrl()}`);
   if (client.isDevMode()) {
